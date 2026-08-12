@@ -44,7 +44,7 @@ export default function Dashboard() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <div className="w-48">
-          <Select value={range} onValueChange={setRange}>
+          <Select value={range} onValueChange={(val: any) => setRange(val)}>
             <SelectTrigger>
               <SelectValue placeholder="Select Range" />
             </SelectTrigger>
@@ -120,7 +120,7 @@ export default function Dashboard() {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="day" axisLine={false} tickLine={false} />
                   <YAxis axisLine={false} tickLine={false} tickFormatter={(val) => `₱${val}`} />
-                  <Tooltip formatter={(val: number) => [`₱${val.toFixed(2)}`, 'Sales']} />
+                  <Tooltip formatter={(val: any) => [`₱${val.toFixed(2)}`, 'Revenue']} />
                   <Line type="monotone" dataKey="total" stroke="#2563eb" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>

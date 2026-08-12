@@ -365,21 +365,22 @@ export default function POS() {
             {paymentMethod === 'CASH' && (
               <div className="space-y-4 pt-4 border-t">
                 <div className="space-y-2">
-                  <Label className="text-center block">Amount Received</Label>
-                  <Input 
-                    type="number" 
-                    className="text-center text-2xl py-6"
-                    value={amountReceived}
-                    onChange={(e) => setAmountReceived(e.target.value)}
-                    autoFocus
-                  />
-                  <div className="flex gap-2 justify-center mt-2">
+                <label className="text-sm font-medium">Amount Received (₱)</label>
+                <Input 
+                  type="number" 
+                  step="0.01" 
+                  min={subtotal} 
+                  required 
+                  value={amountReceived} 
+                  onChange={e => setAmountReceived(e.target.value)} 
+                  className="h-16 text-3xl font-bold text-center" 
+                />
+              </div>    <div className="flex gap-2 justify-center mt-2">
                     <Button variant="outline" size="sm" onClick={() => setAmountReceived(total.toString())}>Exact</Button>
                     <Button variant="outline" size="sm" onClick={() => setAmountReceived('500')}>₱500</Button>
                     <Button variant="outline" size="sm" onClick={() => setAmountReceived('1000')}>₱1000</Button>
                   </div>
                 </div>
-
                 <div className="text-center space-y-1 pt-2">
                   <p className="text-slate-500 font-medium">CHANGE</p>
                   <p className={`text-3xl font-bold ${change >= 0 ? 'text-green-600' : 'text-red-500'}`}>

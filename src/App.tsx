@@ -16,7 +16,7 @@ import CashSession from './pages/CashSession'
 import Setup from './pages/Setup'
 import License from './pages/License'
 
-function AppContent({ restricted }: { restricted: boolean }) {
+function AppContent({ restricted }: { restricted?: boolean }) {
   const { user } = useAuth()
   
   if (!user) {
