@@ -7,7 +7,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Search, Plus, Download, Upload, Edit, Trash2 } from 'lucide-react'
-import { Product, Category } from '@/types'
+import type { Product, Category } from '@prisma/client'
 
 export default function Products() {
   const [products, setProducts] = useState<Product[]>([])

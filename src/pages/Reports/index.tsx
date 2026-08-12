@@ -48,7 +48,7 @@ export default function Reports() {
       <div className="flex justify-between items-center print:hidden">
         <h1 className="text-3xl font-bold tracking-tight">Reports</h1>
         <div className="flex gap-4">
-          <Select value={reportType} onValueChange={setReportType}>
+          <Select value={reportType} onValueChange={(val: any) => setReportType(val)}>
             <SelectTrigger className="w-48"><SelectValue placeholder="Report Type" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="PROFIT">Profit Report</SelectItem>
@@ -57,7 +57,7 @@ export default function Reports() {
             </SelectContent>
           </Select>
           
-          <Select value={range} onValueChange={setRange}>
+          <Select value={range} onValueChange={(val: any) => setRange(val)}>
             <SelectTrigger className="w-48"><SelectValue placeholder="Date Range" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="Today">Today</SelectItem>

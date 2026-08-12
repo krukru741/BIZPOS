@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Search, Plus, Minus, Trash2, ShoppingCart, AlertCircle } from 'lucide-react'
-import { Product } from '@/types'
+import type { Product } from '@prisma/client'
 
 interface CartItem extends Product {
   cartQuantity: number

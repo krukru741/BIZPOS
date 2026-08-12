@@ -130,7 +130,7 @@ export default function Users() {
                 )}
                 <div className="space-y-2">
                   <label className="text-sm font-bold">Role</label>
-                  <Select value={role} onValueChange={setRole} disabled={username === 'admin'}>
+                  <Select value={role} onValueChange={(val: any) => setRole(val)} disabled={username === 'admin'}>
                     <SelectTrigger><SelectValue/></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="ADMIN">Admin</SelectItem>
