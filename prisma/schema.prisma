@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  role      String   // Admin, Manager, Cashier
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  auditLogs AuditLog[]
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String
+  products  Product[]
+}
+
+model Product {
+  id            String   @id @default(uuid())
+  barcode       String?  @unique
+  name          String
+  categoryId    String?
+  category      Category? @relation(fields: [categoryId], references: [id])
+  brand         String?
+  unit          String?
+  costPrice     Float
+  sellingPrice  Float
+  currentStock  Int      @default(0)
+  reorderLevel  Int      @default(0)
+  status        String   @default("ACTIVE") // ACTIVE, INACTIVE
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  saleItems         SaleItem[]
+  inventoryMovements InventoryMovement[]
+}
+
+model Sale {
+  id              String     @id // Format: SALE-YYYYMMDD-000001
+  totalAmount     Float
+  discountAmount  Float      @default(0)
+  netAmount       Float
+  status          String     @default("COMPLETED")
+  createdAt       DateTime   @default(now())
+
+  items           SaleItem[]
+  payment         Payment?
+}
+
+model SaleItem {
+  id        String  @id @default(uuid())
+  saleId    String
+  sale      Sale    @relation(fields: [saleId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
+  subtotal  Float
+}
+
+model Payment {
+  id            String   @id @default(uuid())
+  saleId        String   @unique
+  sale          Sale     @relation(fields: [saleId], references: [id])
+  method        String   // CASH, GCASH, CARD
+  amountReceived Float
+  change        Float
+  createdAt     DateTime @default(now())
+}
+
+model InventoryMovement {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  type      String   // STOCK_IN, SALE, DAMAGED, ADJUSTMENT
+  quantity  Int      // Positive for stock in/adjustment up, negative for sale/damaged/adjustment down
+  remarks   String?
+  createdAt DateTime @default(now())
+}
+
+model Setting {
+  key   String @id
+  value String
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+}
