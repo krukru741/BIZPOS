@@ -22,7 +22,7 @@
   background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
+  @import "tailwindcss";
   -moz-osx-font-smoothing: grayscale;
 
   @media (max-width: 1024px) {
