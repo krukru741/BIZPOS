@@ -1,6 +1,6 @@
 import { getPrisma } from '../services/db.service'
 import { ipcMain } from 'electron'
-import { login, logout, getCurrentUser } from '../services/auth.service'
+import { login, logout, getCurrentUser, requirePermission } from '../services/auth.service'
 
 export function registerAuthIPC() {
   ipcMain.handle('auth-login', async (event, { username, password }) => {
@@ -13,6 +13,11 @@ export function registerAuthIPC() {
 
   ipcMain.handle('auth-current', async () => {
     return getCurrentUser()
+  })
+
+  ipcMain.handle('auth-setup-first-run', async (event, payload) => {
+    const { setupFirstRun } = require('../services/auth.service')
+    return await setupFirstRun(payload)
   })
 
   // User Management

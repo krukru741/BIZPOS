@@ -10,6 +10,38 @@
     "lint": "oxlint",
     "preview": "vite preview"
   },
+  "build": {
+    "appId": "com.juanminigrocery.bizpos",
+    "productName": "BizPOS",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "prisma/schema.prisma",
+        "to": "prisma/schema.prisma"
+      },
+      {
+        "from": "migrations",
+        "to": "migrations"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "public/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false,
+      "artifactName": "BizPOS-Setup-${version}.exe"
+    }
+  },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
     "@fontsource-variable/geist": "^5.3.0",

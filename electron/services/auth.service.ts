@@ -31,18 +31,32 @@ export function requirePermission(permission: string) {
 }
 
 export async function ensureDefaultAdmin() {
-  const count = await prisma.user.count()
-  if (count === 0) {
-    const passwordHash = await bcrypt.hash('password123', 10)
-    await prisma.user.create({
-      data: {
-        username: 'admin',
-        password: passwordHash,
-        role: 'ADMIN',
-        mustChangePassword: true
-      }
-    })
-  }
+  // NO-OP in V1. This used to create an admin account automatically.
+  // Instead, the first-run setup wizard will handle this now.
+}
+
+export async function setupFirstRun(payload: any) {
+  const { businessName, address, ownerName, adminUsername, adminPassword } = payload
+  const prisma = getPrisma()
+  
+  // Create first admin
+  const bcrypt = require('bcryptjs')
+  const hash = await bcrypt.hash(adminPassword, 10)
+  const admin = await prisma.user.create({
+    data: {
+      username: adminUsername,
+      password: hash,
+      role: 'ADMIN',
+      mustChangePassword: false
+    }
+  })
+
+  // In a real app we'd save the business info to settings table, 
+  // but for now we'll just log it.
+  const { logger } = require('./log.service')
+  logger.info(`First-run setup completed for business: ${businessName}`)
+
+  return true
 }
 
 export async function login(username: string, password: string):Promise<Omit<User, 'password'>> {

@@ -10,8 +10,11 @@ import { registerDashboardIPC } from './ipc/dashboard.ipc'
 import { registerAuthIPC } from './ipc/auth.ipc'
 import { registerCashIPC } from './ipc/cash.ipc'
 import { registerBackupIPC } from './ipc/backup.ipc'
-import { ensureDefaultAdmin } from './services/auth.service'
+import { registerLicenseIPC } from './ipc/license.ipc'
 import { checkStartupBackup } from './services/backup.service'
+import { ensureAppDirectories } from './services/paths.service'
+import { runMigrations } from './services/migration.service'
+import { logger } from './services/log.service'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -50,9 +53,18 @@ async function createWindow() {
   registerAuthIPC()
   registerCashIPC()
   registerBackupIPC()
+  registerLicenseIPC()
 
-  await ensureDefaultAdmin()
+  logger.info('Initializing application directories...')
+  await ensureAppDirectories()
+
+  logger.info('Running database migrations...')
+  await runMigrations()
+
+  logger.info('Checking for required daily backup...')
   await checkStartupBackup()
+
+  logger.info('Application boot sequence completed.')
 
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL)
