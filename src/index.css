@@ -85,7 +85,7 @@
     --font-sans: 'Geist Variable', sans-serif;
   }
   * {
-    @apply border-border outline-ring/50;
+    /* removed border-border for tw4 compatibility */
   }
   body {
     @apply bg-background text-foreground;
@@ -97,7 +97,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    /* removed border-border */
   }
   body {
     @apply bg-background text-foreground;
