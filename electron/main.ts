@@ -1,6 +1,12 @@
 import { app, BrowserWindow } from 'electron'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { registerProductIPC } from './ipc/product.ipc'
+import { registerSaleIPC } from './ipc/sale.ipc'
+import { registerSettingsIPC } from './ipc/settings.ipc'
+import { registerCategoryIPC } from './ipc/category.ipc'
+import { registerInventoryIPC } from './ipc/inventory.ipc'
+import { registerDashboardIPC } from './ipc/dashboard.ipc'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -27,6 +33,14 @@ function createWindow() {
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', (new Date).toLocaleString())
   })
+  
+  // Register IPC Handlers
+  registerProductIPC()
+  registerSaleIPC()
+  registerSettingsIPC()
+  registerCategoryIPC()
+  registerInventoryIPC()
+  registerDashboardIPC()
 
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL)
