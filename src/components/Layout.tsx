@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
-import { LayoutDashboard, ShoppingCart, Package, Tags, Settings as SettingsIcon, ClipboardList, Receipt, BarChart, LogOut, UserCircle, Wallet } from 'lucide-react'
+import { LayoutDashboard, ShoppingCart, Package, Tags, Settings as SettingsIcon, ClipboardList, Receipt, BarChart, LogOut, UserCircle, Wallet, DatabaseBackup } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { Button } from '@/components/ui/button'
 
@@ -53,7 +53,12 @@ export default function Layout() {
           </ul>
         </nav>
 
-        <div className="p-4 border-t border-slate-800">
+        <div className="p-4 border-t border-slate-800 space-y-4">
+          {user?.role === 'ADMIN' && (
+            <div className="text-xs flex items-center gap-2 text-emerald-500 bg-slate-800/50 p-2 rounded">
+              <DatabaseBackup size={14} /> Backup Active
+            </div>
+          )}
           <Button variant="destructive" className="w-full flex gap-2" onClick={logout}>
             <LogOut size={16} /> Logout
           </Button>
