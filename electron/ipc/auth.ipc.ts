@@ -1,3 +1,4 @@
+import { getPrisma } from '../services/db.service'
 import { ipcMain } from 'electron'
 import { login, logout, getCurrentUser } from '../services/auth.service'
 
@@ -17,8 +18,7 @@ export function registerAuthIPC() {
   // User Management
   ipcMain.handle('users-list', async () => {
     requirePermission('users.manage')
-    const { PrismaClient } = require('@prisma/client')
-    const prisma = new PrismaClient()
+    const prisma = getPrisma()
     const users = await prisma.user.findMany({ select: { id: true, username: true, role: true, status: true } })
     return users
   })
@@ -27,7 +27,7 @@ export function registerAuthIPC() {
     requirePermission('users.manage')
     const { PrismaClient } = require('@prisma/client')
     const bcrypt = require('bcryptjs')
-    const prisma = new PrismaClient()
+    const prisma = getPrisma()
     
     const count = await prisma.user.count({ where: { username } })
     if (count > 0) throw new Error('Username already exists')
@@ -40,15 +40,13 @@ export function registerAuthIPC() {
 
   ipcMain.handle('users-update', async (event, { id, role }) => {
     requirePermission('users.manage')
-    const { PrismaClient } = require('@prisma/client')
-    const prisma = new PrismaClient()
+    const prisma = getPrisma()
     return await prisma.user.update({ where: { id }, data: { role } })
   })
 
   ipcMain.handle('users-toggle-status', async (event, id) => {
     requirePermission('users.manage')
-    const { PrismaClient } = require('@prisma/client')
-    const prisma = new PrismaClient()
+    const prisma = getPrisma()
     const user = await prisma.user.findUnique({ where: { id } })
     if (user.username === 'admin') throw new Error('Cannot deactivate root admin')
     const newStatus = user.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE'

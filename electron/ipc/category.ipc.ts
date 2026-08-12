@@ -1,7 +1,7 @@
+import { getPrisma } from '../services/db.service'
 import { ipcMain } from 'electron'
-import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
+const prisma = getPrisma()
 
 export function registerCategoryIPC() {
   ipcMain.handle('get-categories', async () => {

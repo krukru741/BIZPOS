@@ -1,8 +1,8 @@
+import { getPrisma } from '../services/db.service'
 import { ipcMain } from 'electron'
-import { PrismaClient } from '@prisma/client'
 import { executeCheckout } from '../services/sale.service'
 
-const prisma = new PrismaClient()
+const prisma = getPrisma()
 
 export function registerSaleIPC() {
   ipcMain.handle('checkout', async (event, data) => {

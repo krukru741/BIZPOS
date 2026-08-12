@@ -1,7 +1,7 @@
 import { PrismaClient, User } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
-const prisma = new PrismaClient()
+const prisma = getPrisma()
 
 // Secure in-memory session state
 export let currentUser: Omit<User, 'password'> | null = null

@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client'
+import { getPrisma } from './db.service'
 import { currentUser, requirePermission } from './auth.service'
 
-const prisma = new PrismaClient()
+const prisma = getPrisma()
 
 export let currentCashSessionId: string | null = null
 

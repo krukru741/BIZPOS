@@ -4,16 +4,17 @@ import path from 'path'
 import fs from 'fs/promises'
 import { format } from 'date-fns-tz'
 import { requirePermission } from './auth.service'
+import { PATHS, ensureAppDirectories } from './paths.service'
+import { getPrisma, disconnectPrisma } from './db.service'
+import { logger } from './log.service'
 
 const TIMEZONE = 'Asia/Manila'
 const MAX_BACKUPS = 30
 const APP_VERSION = '1.0.0'
 const DB_VERSION = 1
 
-let prisma = new PrismaClient()
-
 function getBackupsDir() {
-  return path.join(app.getPath('userData'), 'backups')
+  return PATHS.backups
 }
 
 async function ensureDir(dir: string) {
@@ -40,12 +41,14 @@ export async function createBackup(type: 'DAILY' | 'MANUAL' | 'EMERGENCY' = 'MAN
   const jsonPath = path.join(backupFolder, 'backup.json')
 
   // Live safe backup using SQLite VACUUM INTO
-  // Note: Windows paths in SQLite VACUUM INTO need forward slashes or escaped backslashes.
   const safeDbPath = dbPath.replace(/\\/g, '/')
+  logger.info(`Starting live backup to: ${safeDbPath}`)
+  const prisma = getPrisma()
   await prisma.$executeRawUnsafe(`VACUUM INTO '${safeDbPath}'`)
 
   // Check integrity of the newly created backup
   const isHealthy = await verifyDatabaseIntegrity(safeDbPath)
+  logger.info(`Backup integrity: ${isHealthy ? 'PASS' : 'FAIL'}`)
 
   const metadata = {
     backupId,
@@ -129,40 +132,38 @@ export async function restoreBackup(backupFolderFullPath: string) {
   if (!isHealthy) throw new Error('Selected backup failed integrity check. Restore cancelled.')
 
   // 1. Create emergency backup
+  logger.info(`Creating emergency backup before restore...`)
   await createBackup('EMERGENCY')
 
   // 2. Disconnect Prisma
-  await prisma.$disconnect()
+  await disconnectPrisma()
   
   // 3. Replace the actual DB file
-  // Get current DB path (assuming it's dev.db in process.cwd())
-  const currentDbPath = path.join(process.cwd(), 'dev.db')
+  const currentDbPath = PATHS.db
   
   try {
     await fs.copyFile(dbToRestore, currentDbPath)
+    logger.info(`Copied backup database to active path`)
   } catch (err: any) {
-    // If copy fails, reconnect and abort
-    prisma = new PrismaClient()
+    logger.error(`Failed to copy database: ${err.message}`)
     throw new Error(`Failed to copy database: ${err.message}`)
   }
 
   // 4. Verify restored DB
-  prisma = new PrismaClient()
   const restoredHealthy = await verifyDatabaseIntegrity(currentDbPath)
   
   if (!restoredHealthy) {
-    // Restore failed. Try to rollback using the emergency backup we just created.
-    // Finding the latest emergency backup
-    await prisma.$disconnect()
+    logger.error('Restored database corrupted. Rolling back to emergency.')
+    await disconnectPrisma()
     const backups = await listBackups()
     const latestEmergency = backups.find(b => b.type === 'EMERGENCY')
     if (latestEmergency) {
       await fs.copyFile(path.join(getBackupsDir(), latestEmergency.backupId, 'bizpos.db'), currentDbPath)
     }
-    prisma = new PrismaClient()
     throw new Error('Restored database was corrupted. Rolled back to emergency backup.')
   }
 
+  logger.info('Restore successful. Requesting app restart.')
   // Success, restart app
   setTimeout(() => {
     app.relaunch()

@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client'
+import { getPrisma } from './db.service'
 import { toZonedTime, startOfDay, endOfDay, subDays, startOfMonth, format } from 'date-fns-tz'
 
-const prisma = new PrismaClient()
+const prisma = getPrisma()
 const TIMEZONE = 'Asia/Manila'
 
 export function getDateRange(range: string) {

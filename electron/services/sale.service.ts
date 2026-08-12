@@ -1,8 +1,8 @@
-import { PrismaClient } from '@prisma/client'
+import { getPrisma } from './db.service'
 import { requirePermission, currentUser } from './auth.service'
 import { currentCashSessionId } from './cash.service'
 
-const prisma = new PrismaClient()
+const prisma = getPrisma()
 
 export async function executeCheckout(checkoutData: any) {
   requirePermission('pos.sell')
