@@ -198,7 +198,7 @@ export default function Dashboard() {
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
                   <XAxis type="number" hide />
                   <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} width={60} />
-                  <Tooltip formatter={(val: number) => [`₱${val.toFixed(2)}`, 'Amount']} />
+                  <Tooltip formatter={(val: any) => [`₱${val.toFixed(2)}`, 'Amount']} />
                   <Bar dataKey="value" fill="#6366f1" radius={[0, 4, 4, 0]} barSize={24} />
                 </BarChart>
               </ResponsiveContainer>
