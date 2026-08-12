@@ -16,7 +16,7 @@ const MENU_ITEMS = [
   { path: '/settings', label: 'Settings', icon: SettingsIcon, roles: ['ADMIN'] },
 ]
 
-export default function Layout() {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
   const { user, logout } = useAuth()
 

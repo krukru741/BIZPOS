@@ -18,7 +18,7 @@ interface InventoryMovement {
 }
 
 export default function Inventory() {
-  const [products, setProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<(Product & { category?: Category | null })[]>([])
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [movements, setMovements] = useState<InventoryMovement[]>([])
   const [isHistoryOpen, setIsHistoryOpen] = useState(false)

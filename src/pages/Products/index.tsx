@@ -10,7 +10,7 @@ import { Search, Plus, Download, Upload, Edit, Trash2 } from 'lucide-react'
 import type { Product, Category } from '@prisma/client'
 
 export default function Products() {
-  const [products, setProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<(Product & { category?: Category | null })[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [search, setSearch] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
