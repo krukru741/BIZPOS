@@ -7,6 +7,9 @@ import { registerSettingsIPC } from './ipc/settings.ipc'
 import { registerCategoryIPC } from './ipc/category.ipc'
 import { registerInventoryIPC } from './ipc/inventory.ipc'
 import { registerDashboardIPC } from './ipc/dashboard.ipc'
+import { registerAuthIPC } from './ipc/auth.ipc'
+import { registerCashIPC } from './ipc/cash.ipc'
+import { ensureDefaultAdmin } from './services/auth.service'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -17,17 +20,18 @@ process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.
 let win: BrowserWindow | null
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 
-function createWindow() {
+async function createWindow() {
   win = new BrowserWindow({
-    width: 1280,
-    height: 720,
     icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
-      contextIsolation: true,
-      nodeIntegration: false
+      nodeIntegration: true,
+      contextIsolation: false
     },
+    autoHideMenuBar: true
   })
+
+  win.maximize()
 
   // Test active push message to Renderer-process.
   win.webContents.on('did-finish-load', () => {
@@ -41,6 +45,10 @@ function createWindow() {
   registerCategoryIPC()
   registerInventoryIPC()
   registerDashboardIPC()
+  registerAuthIPC()
+  registerCashIPC()
+
+  await ensureDefaultAdmin()
 
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL)

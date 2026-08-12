@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -12,6 +13,7 @@ interface CartItem extends Product {
 }
 
 export default function POS() {
+  const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [products, setProducts] = useState<Product[]>([])
   const [cart, setCart] = useState<CartItem[]>([])
@@ -26,6 +28,15 @@ export default function POS() {
   const [isCheckingOut, setIsCheckingOut] = useState(false)
 
   const searchInputRef = useRef<HTMLInputElement>(null)
+
+  // Session check
+  useEffect(() => {
+    window.ipcRenderer.invoke('cash-active-session').then(session => {
+      if (!session) {
+        navigate('/cash')
+      }
+    })
+  }, [navigate])
 
   // Totals
   const subtotal = cart.reduce((sum, item) => sum + item.subtotal, 0)

@@ -1,8 +1,13 @@
 import { PrismaClient } from '@prisma/client'
+import { requirePermission, currentUser } from './auth.service'
+import { currentCashSessionId } from './cash.service'
 
 const prisma = new PrismaClient()
 
 export async function executeCheckout(checkoutData: any) {
+  requirePermission('pos.sell')
+  if (!currentCashSessionId) throw new Error('No open cash session. Please open a session first.')
+
   return await prisma.$transaction(async (tx) => {
     // 1. Generate Sale ID
     const today = new Date()
@@ -27,6 +32,7 @@ export async function executeCheckout(checkoutData: any) {
     const sale = await tx.sale.create({
       data: {
         transactionNo: transactionNo,
+        cashSessionId: currentCashSessionId,
         totalAmount: checkoutData.totalAmount,
         discountAmount: checkoutData.discountAmount,
         netAmount: checkoutData.netAmount,

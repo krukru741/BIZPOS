@@ -1,48 +1,63 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
-import { LayoutDashboard, ShoppingCart, Package, Users, Settings, Tag, FileText } from 'lucide-react'
+import { LayoutDashboard, ShoppingCart, Package, Tags, Settings as SettingsIcon, ClipboardList, Receipt, BarChart, LogOut, UserCircle, Wallet } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
+import { Button } from '@/components/ui/button'
+
+const MENU_ITEMS = [
+  { path: '/pos', label: 'POS', icon: ShoppingCart, roles: ['ADMIN', 'MANAGER', 'CASHIER'] },
+  { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['ADMIN'] },
+  { path: '/sales', label: 'Sales History', icon: Receipt, roles: ['ADMIN', 'MANAGER', 'CASHIER'] },
+  { path: '/cash', label: 'Cash Session', icon: Wallet, roles: ['ADMIN', 'MANAGER', 'CASHIER'] },
+  { path: '/products', label: 'Products', icon: Package, roles: ['ADMIN', 'MANAGER'] },
+  { path: '/categories', label: 'Categories', icon: Tags, roles: ['ADMIN'] },
+  { path: '/inventory', label: 'Inventory', icon: ClipboardList, roles: ['ADMIN', 'MANAGER'] },
+  { path: '/reports', label: 'Reports', icon: BarChart, roles: ['ADMIN', 'MANAGER'] },
+  { path: '/users', label: 'Users', icon: UserCircle, roles: ['ADMIN'] },
+  { path: '/settings', label: 'Settings', icon: SettingsIcon, roles: ['ADMIN'] },
+]
 
 export default function Layout() {
   const location = useLocation()
+  const { user, logout } = useAuth()
 
-  const links = [
-    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'POS', path: '/pos', icon: ShoppingCart },
-    { name: 'Products', path: '/products', icon: Tag },
-    { name: 'Inventory', path: '/inventory', icon: Package },
-    { name: 'Sales', path: '/sales', icon: FileText },
-    { name: 'Reports', path: '/reports', icon: FileText },
-    { name: 'Users', path: '/users', icon: Users },
-    { name: 'Settings', path: '/settings', icon: Settings },
-  ]
+  const allowedItems = MENU_ITEMS.filter(item => item.roles.includes(user?.role || ''))
 
   return (
-    <div className="flex h-screen bg-slate-50 print:bg-white">
-      {/* Sidebar */}
-      <aside className="w-64 bg-slate-900 text-white flex flex-col print:hidden">
-        <div className="p-6 border-b border-slate-800">
-          <h1 className="text-2xl font-bold tracking-tight">BIZPOS</h1>
-          <p className="text-sm text-slate-400">Admin ▼</p>
+    <div className="flex h-screen bg-slate-50">
+      <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col print:hidden">
+        <div className="p-4 border-b border-slate-800">
+          <h1 className="text-xl font-bold text-white tracking-wider">BIZPOS</h1>
+          <p className="text-xs text-slate-500 uppercase tracking-widest mt-1">Cashier: {user?.username}</p>
         </div>
+        
         <nav className="flex-1 overflow-y-auto py-4">
-          <ul className="space-y-1 px-3">
-            {links.map((link) => {
-              const active = location.pathname === link.path
+          <ul className="space-y-1 px-2">
+            {allowedItems.map((item) => {
+              const isActive = location.pathname === item.path
               return (
-                <li key={link.name}>
+                <li key={item.path}>
                   <Link
-                    to={link.path}
+                    to={item.path}
                     className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
-                      active ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                      isActive 
+                        ? 'bg-blue-600 text-white font-medium' 
+                        : 'hover:bg-slate-800 hover:text-white'
                     }`}
                   >
-                    <link.icon size={20} />
-                    <span>{link.name}</span>
+                    <item.icon size={20} />
+                    {item.label}
                   </Link>
                 </li>
               )
             })}
           </ul>
         </nav>
+
+        <div className="p-4 border-t border-slate-800">
+          <Button variant="destructive" className="w-full flex gap-2" onClick={logout}>
+            <LogOut size={16} /> Logout
+          </Button>
+        </div>
       </aside>
 
       {/* Main Content */}

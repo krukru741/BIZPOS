@@ -7,14 +7,18 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  username  String   @unique
-  password  String
-  role      String   // Admin, Manager, Cashier
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                 String   @id @default(uuid())
+  username           String   @unique
+  password           String
+  role               String   // Admin, Manager, Cashier
+  status             String   @default("ACTIVE")
+  mustChangePassword Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
-  auditLogs AuditLog[]
+  auditLogs          AuditLog[]
+  openedSessions     CashSession[] @relation("OpenedSessions")
+  closedSessions     CashSession[] @relation("ClosedSessions")
 }
 
 model Category {
@@ -46,9 +50,41 @@ model Product {
   @@index([name])
 }
 
+model CashSession {
+  id           String    @id @default(uuid())
+  sessionNo    String    @unique
+  openedById   String
+  openedBy     User      @relation("OpenedSessions", fields: [openedById], references: [id])
+  closedById   String?
+  closedBy     User?     @relation("ClosedSessions", fields: [closedById], references: [id])
+  openedAt     DateTime  @default(now())
+  closedAt     DateTime?
+  openingCash  Float
+  expectedCash Float?
+  actualCash   Float?
+  variance     Float?
+  status       String    @default("OPEN") // OPEN, BALANCED, SHORT, OVER
+
+  sales        Sale[]
+  movements    CashMovement[]
+}
+
+model CashMovement {
+  id            String      @id @default(uuid())
+  cashSessionId String
+  cashSession   CashSession @relation(fields: [cashSessionId], references: [id])
+  type          String      // CASH_IN, CASH_OUT
+  amount        Float
+  reason        String
+  note          String?
+  createdAt     DateTime    @default(now())
+}
+
 model Sale {
   id              String     @id @default(uuid())
   transactionNo   String     @unique // Format: SALE-YYYYMMDD-000001
+  cashSessionId   String?
+  cashSession     CashSession? @relation(fields: [cashSessionId], references: [id])
   totalAmount     Float
   discountAmount  Float      @default(0)
   netAmount       Float
