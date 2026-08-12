@@ -166,7 +166,7 @@ export default function Inventory() {
 
             <div className="space-y-2">
               <Label>Reason</Label>
-              <Select value={adjData.type} onValueChange={(v) => setAdjData({...adjData, type: v})}>
+              <Select value={adjData.type} onValueChange={(v: any) => setAdjData({...adjData, type: v})}>
                 <SelectTrigger><SelectValue/></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="STOCK_IN">Stock In (+)</SelectItem>
