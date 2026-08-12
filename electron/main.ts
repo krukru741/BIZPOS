@@ -9,7 +9,9 @@ import { registerInventoryIPC } from './ipc/inventory.ipc'
 import { registerDashboardIPC } from './ipc/dashboard.ipc'
 import { registerAuthIPC } from './ipc/auth.ipc'
 import { registerCashIPC } from './ipc/cash.ipc'
+import { registerBackupIPC } from './ipc/backup.ipc'
 import { ensureDefaultAdmin } from './services/auth.service'
+import { checkStartupBackup } from './services/backup.service'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -47,8 +49,10 @@ async function createWindow() {
   registerDashboardIPC()
   registerAuthIPC()
   registerCashIPC()
+  registerBackupIPC()
 
   await ensureDefaultAdmin()
+  await checkStartupBackup()
 
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL)
