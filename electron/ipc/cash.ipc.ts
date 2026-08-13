@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron'
-import { openCashSession, closeCashSession, addCashMovement, getActiveCashSession, calculateExpectedCash } from '../services/cash.service'
+import { openCashSession, closeCashSession, addCashMovement, getActiveCashSession, calculateExpectedCash, getCashSessionBreakdown } from '../services/cash.service'
 
 export function registerCashIPC() {
   ipcMain.handle('cash-open-session', async (event, openingCash: number) => {
@@ -20,5 +20,9 @@ export function registerCashIPC() {
 
   ipcMain.handle('cash-expected', async (event, sessionId: string) => {
     return await calculateExpectedCash(sessionId)
+  })
+
+  ipcMain.handle('cash-breakdown', async (event, sessionId: string) => {
+    return await getCashSessionBreakdown(sessionId)
   })
 }

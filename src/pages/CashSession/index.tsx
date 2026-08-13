@@ -3,22 +3,23 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/context/AuthContext'
-import { Wallet, AlertTriangle, ArrowRightLeft } from 'lucide-react'
+import { Wallet, AlertTriangle, ArrowRightLeft, Info, CheckCircle, AlertCircle } from 'lucide-react'
 
 export default function CashSession() {
   const { user } = useAuth()
   const [session, setSession] = useState<any>(null)
-  const [expectedCash, setExpectedCash] = useState(0)
+  const [breakdown, setBreakdown] = useState<any>(null)
   
   // Forms
   const [openingCash, setOpeningCash] = useState('')
   const [actualCash, setActualCash] = useState('')
   const [closingNote, setClosingNote] = useState('')
 
-  // Modals (simple state for now)
+  // Modals
   const [showMovement, setShowMovement] = useState<'CASH_IN' | 'CASH_OUT' | null>(null)
   const [movementAmount, setMovementAmount] = useState('')
   const [movementReason, setMovementReason] = useState('')
+  const [showCloseConfirm, setShowCloseConfirm] = useState(false)
 
   // Session Opening UI State
   const [isOpening, setIsOpening] = useState(false)
@@ -33,8 +34,8 @@ export default function CashSession() {
       const active = await window.ipcRenderer.invoke('cash-active-session')
       setSession(active)
       if (active) {
-        const expected = await window.ipcRenderer.invoke('cash-expected', active.id)
-        setExpectedCash(expected)
+        const _breakdown = await window.ipcRenderer.invoke('cash-breakdown', active.id)
+        setBreakdown(_breakdown)
       }
     } catch (err) {
       console.error(err)
@@ -43,22 +44,32 @@ export default function CashSession() {
 
   const handleOpenSession = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsOpening(true)
     try {
       await window.ipcRenderer.invoke('cash-open-session', parseFloat(openingCash || '0'))
-      setOpeningCash('')
-      loadSession()
+      setSuccess(true)
+      setTimeout(() => {
+        loadSession()
+      }, 1000)
     } catch (err: any) {
       alert(err.message)
+      setIsOpening(false)
     }
   }
 
-  const handleCloseSession = async (e: React.FormEvent) => {
+  const handleCloseSessionSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    setShowCloseConfirm(true)
+  }
+
+  const confirmCloseSession = async () => {
     try {
       await window.ipcRenderer.invoke('cash-close-session', { actualCash: parseFloat(actualCash || '0'), note: closingNote })
       setSession(null)
+      setBreakdown(null)
       setActualCash('')
       setClosingNote('')
+      setShowCloseConfirm(false)
       loadSession()
     } catch (err: any) {
       alert(err.message)
@@ -83,23 +94,17 @@ export default function CashSession() {
     }
   }
 
-  if (!session) {
-    const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-
-    const handleFormSubmit = async (e: React.FormEvent) => {
-      e.preventDefault()
-      setIsOpening(true)
-      try {
-        await window.ipcRenderer.invoke('cash-open-session', parseFloat(openingCash || '0'))
-        setSuccess(true)
-        setTimeout(() => {
-          loadSession()
-        }, 1000)
-      } catch (err: any) {
-        alert(err.message)
-        setIsOpening(false)
+  const handleActualCashBlur = () => {
+    if (actualCash) {
+      const parsed = parseFloat(actualCash)
+      if (!isNaN(parsed)) {
+        setActualCash(parsed.toFixed(2))
       }
     }
+  }
+
+  if (!session) {
+    const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
 
     return (
       <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
@@ -123,7 +128,7 @@ export default function CashSession() {
               </div>
             </div>
 
-            <form onSubmit={handleFormSubmit} className="space-y-6">
+            <form onSubmit={handleOpenSession} className="space-y-6">
               <div className="space-y-3">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Opening Cash</label>
                 <div className="relative">
@@ -164,109 +169,243 @@ export default function CashSession() {
     )
   }
 
-  const variance = parseFloat(actualCash || '0') - expectedCash
+  if (!breakdown) return null // loading breakdown
+
+  const expectedCash = breakdown.expectedCash
+  const variance = actualCash ? Math.round((parseFloat(actualCash) - expectedCash) * 100) / 100 : 0
+  const isShort = variance < 0
+  const isOver = variance > 0
+  const isBalanced = variance === 0 && actualCash !== ''
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="max-w-4xl mx-auto space-y-6">
+      <div className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Active Cash Session</h1>
-          <p className="text-slate-500">{session.sessionNo} • Opened at {new Date(session.openedAt).toLocaleTimeString()}</p>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Active Cash Session</h1>
+          <p className="text-sm font-medium text-slate-500 mt-1">
+            <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-bold mr-2">{session.sessionNo}</span>
+            Opened by <span className="font-bold">{user?.username}</span> at {new Date(session.openedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+          </p>
         </div>
-        <div className="flex gap-4">
-          <Button variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50" onClick={() => setShowMovement('CASH_IN')}>+ Cash In</Button>
-          <Button variant="outline" className="text-rose-600 border-rose-200 bg-rose-50" onClick={() => setShowMovement('CASH_OUT')}>- Cash Out</Button>
+        <div className="flex gap-3">
+          <Button variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50 hover:bg-emerald-100 hover:text-emerald-700 font-bold h-10 px-6 rounded-xl transition-all" onClick={() => setShowMovement('CASH_IN')}>+ Cash In</Button>
+          <Button variant="outline" className="text-rose-600 border-rose-200 bg-rose-50 hover:bg-rose-100 hover:text-rose-700 font-bold h-10 px-6 rounded-xl transition-all" onClick={() => setShowMovement('CASH_OUT')}>- Cash Out</Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
-        <Card>
-          <CardHeader><CardTitle>End of Shift Reconciliation</CardTitle></CardHeader>
-          <CardContent>
-            <form onSubmit={handleCloseSession} className="space-y-6">
-              <div className="space-y-2">
-                <div className="flex justify-between text-lg font-medium text-slate-600 pb-4 border-b">
-                  <span>Expected Cash</span>
-                  <span className="font-bold text-black">₱{expectedCash.toFixed(2)}</span>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700">Actual Cash (Counted)</label>
-                <Input 
-                  type="number" 
-                  step="0.01" 
-                  required
-                  value={actualCash} 
-                  onChange={e => setActualCash(e.target.value)} 
-                  className="h-14 text-3xl font-bold text-center"
-                />
-              </div>
-
-              {actualCash && (
-                <div className={`p-4 rounded-md flex justify-between items-center ${variance === 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
-                  <span className="font-bold">Variance</span>
-                  <span className="text-xl font-bold">{variance > 0 ? '+' : ''}₱{variance.toFixed(2)}</span>
-                </div>
-              )}
-
-              {variance !== 0 && actualCash && (
-                 <div className="space-y-2">
-                 <label className="text-sm font-bold text-slate-700">Reason for Variance</label>
-                 <Input 
-                   required
-                   value={closingNote} 
-                   onChange={e => setClosingNote(e.target.value)} 
-                   placeholder="E.g. Missing change, given wrong change"
-                 />
-               </div>
-              )}
-
-              <Button type="submit" className="w-full h-12 text-lg font-bold" variant="destructive">CLOSE SESSION</Button>
-            </form>
-          </CardContent>
-        </Card>
-
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        {/* LEFT COLUMN: Breakdown & Logs */}
         <div className="space-y-6">
-          <Card>
-             <CardContent className="pt-6">
-               <div className="flex justify-between items-center">
-                 <span className="text-slate-500 font-medium">Opening Cash</span>
-                 <span className="font-bold text-lg">₱{session.openingCash.toFixed(2)}</span>
-               </div>
-             </CardContent>
+          <Card className="rounded-2xl shadow-sm border-slate-100 overflow-hidden">
+            <CardHeader className="bg-slate-50 border-b border-slate-100 pb-4">
+              <CardTitle className="text-sm font-bold text-slate-800 uppercase tracking-widest">Cash Drawer Breakdown</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="p-5 space-y-3 font-medium text-slate-700">
+                <div className="flex justify-between">
+                  <span>Opening Cash</span>
+                  <span>₱ {breakdown.openingCash.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-emerald-600">
+                  <span>(+) Cash Sales</span>
+                  <span>+ ₱ {breakdown.cashSales.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-emerald-600">
+                  <span>(+) Cash In</span>
+                  <span>+ ₱ {breakdown.cashIn.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-rose-600">
+                  <span>(-) Cash Out</span>
+                  <span>- ₱ {breakdown.cashOut.toFixed(2)}</span>
+                </div>
+              </div>
+              <div className="bg-slate-900 text-white p-5 flex justify-between items-center">
+                <span className="font-bold uppercase tracking-widest text-sm">Expected Cash</span>
+                <span className="text-2xl font-black">= ₱ {breakdown.expectedCash.toFixed(2)}</span>
+              </div>
+            </CardContent>
           </Card>
-          
-          <Card className="bg-slate-50 border-dashed border-2">
-             <CardContent className="pt-6 text-center text-slate-500">
-               <ArrowRightLeft className="mx-auto mb-2 opacity-50" />
-               <p className="text-sm">Record petty cash payouts or additional change funds using the Cash In/Out buttons above.</p>
-             </CardContent>
-          </Card>
-        </div>
-      </div>
 
-      {showMovement && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-sm">
-            <CardHeader>
-              <CardTitle>{showMovement === 'CASH_IN' ? 'Cash In' : 'Cash Out'}</CardTitle>
+          <Card className="rounded-2xl shadow-sm border-slate-100">
+            <CardContent className="p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3 text-slate-500">
+                <Info size={20} className="text-blue-500" />
+                <span className="text-sm font-medium">Non-Cash Sales (Not in drawer)</span>
+              </div>
+              <div className="text-sm font-bold text-slate-800">
+                GCash: ₱{breakdown.nonCashSales.gcash.toFixed(2)} &nbsp;|&nbsp; Card: ₱{breakdown.nonCashSales.card.toFixed(2)}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-2xl shadow-sm border-slate-100">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-bold text-slate-800 uppercase tracking-widest">Recent Cash Log</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleMovement} className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-bold">Amount (₱)</label>
-                  <Input type="number" step="0.01" min="0.01" required value={movementAmount} onChange={e=>setMovementAmount(e.target.value)} autoFocus />
+              {breakdown.movements.length === 0 ? (
+                <div className="text-center py-6 text-slate-400 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                  <ArrowRightLeft size={24} className="mx-auto mb-2 text-slate-300" />
+                  <p className="font-medium text-sm">No cash movements yet.</p>
+                  <p className="text-xs mt-1">Use Cash In / Out for petty cash.</p>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold">Reason</label>
-                  <Input required value={movementReason} onChange={e=>setMovementReason(e.target.value)} placeholder="E.g. Petty cash, water refill..." />
+              ) : (
+                <div className="space-y-3 mt-2 max-h-48 overflow-y-auto pr-2">
+                  {breakdown.movements.map((mov: any) => (
+                    <div key={mov.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+                      <div>
+                        <p className="font-bold text-sm text-slate-800">{mov.reason}</p>
+                        <p className="text-xs text-slate-500">{new Date(mov.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                      </div>
+                      <span className={`font-bold ${mov.type === 'CASH_IN' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                        {mov.type === 'CASH_IN' ? '+' : '-'} ₱{mov.amount.toFixed(2)}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex gap-2 pt-2">
-                  <Button type="button" variant="outline" className="flex-1" onClick={() => setShowMovement(null)}>Cancel</Button>
-                  <Button type="submit" className={`flex-1 ${showMovement==='CASH_IN' ? 'bg-emerald-600' : 'bg-rose-600'}`}>Confirm</Button>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* RIGHT COLUMN: Reconciliation */}
+        <div>
+          <Card className="rounded-2xl shadow-md border-0 bg-white sticky top-6">
+            <CardHeader className="bg-slate-50 border-b border-slate-100 rounded-t-2xl pb-4">
+              <CardTitle className="text-sm font-bold text-slate-800 uppercase tracking-widest">End of Shift Reconciliation</CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              <form onSubmit={handleCloseSessionSubmit} className="space-y-6">
+                
+                <div className="space-y-3">
+                  <label className="text-sm font-bold text-slate-700 uppercase tracking-widest">Actual Cash (Counted)</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <span className="text-slate-400 font-bold text-2xl">₱</span>
+                    </div>
+                    <Input 
+                      type="number" 
+                      step="0.01" 
+                      required
+                      value={actualCash} 
+                      onChange={e => setActualCash(e.target.value)} 
+                      onBlur={handleActualCashBlur}
+                      className="pl-12 h-20 text-4xl font-black text-slate-800 rounded-xl bg-white border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all shadow-sm tracking-tight"
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+
+                {/* Dynamic Difference Indicator */}
+                {actualCash && (
+                  <div className={`p-4 rounded-xl flex items-center gap-3 border ${
+                    isBalanced ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 
+                    isShort ? 'bg-rose-50 border-rose-200 text-rose-700' : 
+                    'bg-amber-50 border-amber-200 text-amber-700'
+                  }`}>
+                    {isBalanced && <CheckCircle size={24} className="text-emerald-500" />}
+                    {isShort && <AlertTriangle size={24} className="text-rose-500" />}
+                    {isOver && <Info size={24} className="text-amber-500" />}
+                    
+                    <div className="flex-1 font-bold text-sm">
+                      {isBalanced && 'Balanced (₱0.00)'}
+                      {isShort && `Short by -₱${Math.abs(variance).toFixed(2)}`}
+                      {isOver && `Over by +₱${variance.toFixed(2)}`}
+                    </div>
+                  </div>
+                )}
+
+                {!isBalanced && actualCash && (
+                  <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Reason for Variance</label>
+                    <Input 
+                      required
+                      value={closingNote} 
+                      onChange={e => setClosingNote(e.target.value)} 
+                      className="h-12 rounded-xl"
+                      placeholder="E.g. Missing change, given wrong change"
+                    />
+                  </div>
+                )}
+
+                <div className="pt-4">
+                  <Button 
+                    type="submit" 
+                    className="w-full h-14 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-lg tracking-wide transition-all shadow-lg hover:shadow-xl"
+                  >
+                    CLOSE SESSION
+                  </Button>
                 </div>
               </form>
             </CardContent>
+          </Card>
+        </div>
+
+      </div>
+
+      {/* Movement Modal */}
+      {showMovement && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-200">
+          <Card className="w-full max-w-sm rounded-2xl shadow-2xl border-0">
+            <CardHeader className="bg-slate-50 rounded-t-2xl border-b border-slate-100 pb-4">
+              <CardTitle className={`text-lg font-black tracking-tight ${showMovement === 'CASH_IN' ? 'text-emerald-700' : 'text-rose-700'}`}>
+                {showMovement === 'CASH_IN' ? 'Add Cash In' : 'Record Cash Out'}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              <form onSubmit={handleMovement} className="space-y-5">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Amount (₱)</label>
+                  <Input type="number" step="0.01" min="0.01" required value={movementAmount} onChange={e=>setMovementAmount(e.target.value)} autoFocus className="h-12 text-lg font-bold rounded-xl" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Reason</label>
+                  <Input required value={movementReason} onChange={e=>setMovementReason(e.target.value)} placeholder="E.g. Petty cash, water refill..." className="h-12 rounded-xl" />
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <Button type="button" variant="outline" className="flex-1 h-12 rounded-xl font-bold" onClick={() => setShowMovement(null)}>Cancel</Button>
+                  <Button type="submit" className={`flex-1 h-12 rounded-xl font-bold text-white shadow-md ${showMovement === 'CASH_IN' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-rose-600 hover:bg-rose-700'}`}>Confirm</Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Close Session Confirmation Modal */}
+      {showCloseConfirm && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-200">
+          <Card className="w-full max-w-md rounded-2xl shadow-2xl border-0 overflow-hidden">
+            <div className="bg-slate-900 p-6 text-center text-white">
+              <AlertCircle size={48} className="mx-auto mb-4 text-amber-400" />
+              <h2 className="text-2xl font-black tracking-tight">Close Cash Session?</h2>
+              <p className="text-slate-400 mt-2 text-sm font-medium">Closing this session will finalize today's shift and print the X-Report summary.</p>
+            </div>
+            
+            <div className="p-6 bg-slate-50 border-b border-slate-100 flex justify-between text-center">
+              <div>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Expected</p>
+                <p className="font-bold text-slate-900 mt-1">₱{expectedCash.toFixed(2)}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Actual</p>
+                <p className="font-bold text-slate-900 mt-1">₱{parseFloat(actualCash).toFixed(2)}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Variance</p>
+                <p className={`font-bold mt-1 ${isBalanced ? 'text-emerald-600' : isShort ? 'text-rose-600' : 'text-amber-600'}`}>
+                  {variance > 0 ? '+' : ''}₱{variance.toFixed(2)}
+                </p>
+              </div>
+            </div>
+
+            <div className="p-6 flex gap-3 bg-white">
+              <Button type="button" variant="outline" className="flex-1 h-12 rounded-xl font-bold" onClick={() => setShowCloseConfirm(false)}>Cancel</Button>
+              <Button type="button" onClick={confirmCloseSession} className="flex-1 h-12 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold shadow-md">
+                Confirm & Close
+              </Button>
+            </div>
           </Card>
         </div>
       )}

@@ -70,24 +70,51 @@ export async function addCashMovement(type: 'CASH_IN' | 'CASH_OUT', amount: numb
   return movement
 }
 
-export async function calculateExpectedCash(sessionId: string) {
-  const session = await prisma.cashSession.findUnique({ where: { id: sessionId }, include: { sales: { include: { payment: true } }, movements: true } })
+export async function getCashSessionBreakdown(sessionId: string) {
+  const session = await prisma.cashSession.findUnique({ where: { id: sessionId }, include: { sales: { include: { payment: true } }, movements: { orderBy: { createdAt: 'desc' } } } })
   if (!session) throw new Error('Session not found')
 
-  let expected = session.openingCash
+  let cashSales = 0
+  let cashIn = 0
+  let cashOut = 0
+  let gcashSales = 0
+  let cardSales = 0
 
   for (const sale of session.sales) {
-    if (sale.status === 'COMPLETED' && sale.payment?.method === 'CASH') {
-      expected += sale.netAmount
+    if (sale.status === 'COMPLETED') {
+      if (sale.payment?.method === 'CASH') cashSales += sale.netAmount
+      if (sale.payment?.method === 'GCASH') gcashSales += sale.netAmount
+      if (sale.payment?.method === 'CARD') cardSales += sale.netAmount
     }
   }
 
   for (const mov of session.movements) {
-    if (mov.type === 'CASH_IN') expected += mov.amount
-    if (mov.type === 'CASH_OUT') expected -= mov.amount
+    if (mov.type === 'CASH_IN') cashIn += mov.amount
+    if (mov.type === 'CASH_OUT') cashOut += mov.amount
   }
 
-  return expected
+  const expected = session.openingCash + cashSales + cashIn - cashOut
+  
+  // Clean floating point errors
+  const round = (val: number) => Math.round(val * 100) / 100
+
+  return {
+    openingCash: round(session.openingCash),
+    cashSales: round(cashSales),
+    cashIn: round(cashIn),
+    cashOut: round(cashOut),
+    expectedCash: round(expected),
+    nonCashSales: {
+      gcash: round(gcashSales),
+      card: round(cardSales)
+    },
+    movements: session.movements
+  }
+}
+
+export async function calculateExpectedCash(sessionId: string) {
+  const breakdown = await getCashSessionBreakdown(sessionId)
+  return breakdown.expectedCash
 }
 
 export async function closeCashSession(actualCash: number, note: string) {
