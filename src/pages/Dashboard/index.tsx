@@ -2,17 +2,19 @@ import { useState, useEffect } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
-import { TrendingUp, ShoppingCart, DollarSign, Package, CheckCircle } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { TrendingUp, ShoppingCart, DollarSign, Package, CheckCircle, Wallet, ArrowRight } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function Dashboard() {
+  const navigate = useNavigate()
   const [range, setRange] = useState('Today')
   const [kpis, setKpis] = useState({ sales: 0, transactions: 0, itemsSold: 0, grossProfit: 0, lowStock: 0 })
   const [salesTrend, setSalesTrend] = useState<any[]>([])
   const [topProducts, setTopProducts] = useState<any[]>([])
   const [paymentMethods, setPaymentMethods] = useState<any[]>([])
   const [lowStockProducts, setLowStockProducts] = useState<any[]>([])
+  const [activeSession, setActiveSession] = useState<any>(null)
 
   useEffect(() => {
     loadData()
@@ -34,18 +36,21 @@ export default function Dashboard() {
 
       const _low = await window.ipcRenderer.invoke('dashboard-low-stock')
       setLowStockProducts(_low)
+
+      const _session = await window.ipcRenderer.invoke('cash-active-session')
+      setActiveSession(_session)
     } catch (err) {
       console.error(err)
     }
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+    <div className="space-y-4">
+      <div className="flex justify-between items-center mb-2">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Dashboard</h1>
         <div className="w-48">
           <Select value={range} onValueChange={(val: any) => setRange(val)}>
-            <SelectTrigger>
+            <SelectTrigger className="h-9">
               <SelectValue placeholder="Select Range" />
             </SelectTrigger>
             <SelectContent>
@@ -58,6 +63,27 @@ export default function Dashboard() {
           </Select>
         </div>
       </div>
+
+      {/* Cash Session Status Banner */}
+      {activeSession ? (
+        <div className="flex items-center justify-between bg-emerald-50 border border-emerald-100 p-3 px-4 rounded-xl mb-2 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+            <p className="text-sm font-semibold text-emerald-800">Cash Session Open</p>
+          </div>
+          <p className="text-xs font-bold text-emerald-700">Opening Cash: ₱{activeSession.openingCash.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+        </div>
+      ) : (
+        <div className="flex items-center justify-between bg-amber-50 border border-amber-100 p-3 px-4 rounded-xl mb-2 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]"></div>
+            <p className="text-sm font-semibold text-amber-800">Cash Session Not Open</p>
+          </div>
+          <Button size="sm" onClick={() => navigate('/cash')} className="h-7 text-xs bg-amber-500 hover:bg-amber-600 text-white font-bold px-4">
+            Open Cash Session
+          </Button>
+        </div>
+      )}
 
       {/* KPIs */}
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">

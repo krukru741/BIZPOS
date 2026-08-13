@@ -20,6 +20,10 @@ export default function CashSession() {
   const [movementAmount, setMovementAmount] = useState('')
   const [movementReason, setMovementReason] = useState('')
 
+  // Session Opening UI State
+  const [isOpening, setIsOpening] = useState(false)
+  const [success, setSuccess] = useState(false)
+
   useEffect(() => {
     loadSession()
   }, [])
@@ -81,8 +85,6 @@ export default function CashSession() {
 
   if (!session) {
     const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-    const [isOpening, setIsOpening] = useState(false)
-    const [success, setSuccess] = useState(false)
 
     const handleFormSubmit = async (e: React.FormEvent) => {
       e.preventDefault()
