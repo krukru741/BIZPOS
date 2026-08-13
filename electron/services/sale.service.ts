@@ -99,3 +99,67 @@ export async function executeCheckout(checkoutData: any) {
     return sale
   })
 }
+
+export async function getSales() {
+  return await prisma.sale.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: {
+      payment: true,
+      cashSession: {
+        include: { openedBy: true }
+      },
+      items: {
+        include: { product: true }
+      }
+    }
+  })
+}
+
+export async function voidSale(saleId: string, reason: string) {
+  requirePermission('pos.sell') // or specific void permission, assuming manager/admin/cashier can void for now
+  if (!currentUser) throw new Error('Not logged in')
+
+  return await prisma.$transaction(async (tx) => {
+    const sale = await tx.sale.findUnique({
+      where: { id: saleId },
+      include: { items: true }
+    })
+
+    if (!sale) throw new Error('Sale not found')
+    if (sale.status === 'VOIDED') throw new Error('Sale is already voided')
+
+    // 1. Update Sale status to VOIDED
+    const updatedSale = await tx.sale.update({
+      where: { id: saleId },
+      data: { status: 'VOIDED' }
+    })
+
+    // 2. Restore Stock and 3. Create Inventory Movements
+    for (const item of sale.items) {
+      await tx.product.update({
+        where: { id: item.productId },
+        data: { currentStock: { increment: item.quantity } }
+      })
+
+      await tx.inventoryMovement.create({
+        data: {
+          productId: item.productId,
+          type: "VOID_RETURN",
+          quantity: item.quantity,
+          remarks: `Voided Sale ${sale.transactionNo}. Reason: ${reason}`
+        }
+      })
+    }
+
+    // 4. Create AuditLog entry
+    await tx.auditLog.create({
+      data: {
+        userId: currentUser.id,
+        action: "VOID_SALE",
+        details: `Voided Sale ${sale.transactionNo} for ₱${sale.netAmount}. Reason: ${reason}`
+      }
+    })
+
+    return updatedSale
+  })
+}

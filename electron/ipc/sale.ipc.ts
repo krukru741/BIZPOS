@@ -1,6 +1,6 @@
 import { getPrisma } from '../services/db.service'
 import { ipcMain } from 'electron'
-import { executeCheckout } from '../services/sale.service'
+import { executeCheckout, getSales, voidSale } from '../services/sale.service'
 
 const prisma = getPrisma()
 
@@ -10,15 +10,10 @@ export function registerSaleIPC() {
   })
 
   ipcMain.handle('get-sales', async () => {
-    // Basic implementation: get recent sales
-    return await prisma.sale.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        payment: true,
-        items: {
-          include: { product: true }
-        }
-      }
-    })
+    return await getSales()
+  })
+
+  ipcMain.handle('void-sale', async (event, { saleId, reason }) => {
+    return await voidSale(saleId, reason)
   })
 }
