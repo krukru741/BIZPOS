@@ -10,9 +10,11 @@ export default function Settings() {
   const { user } = useAuth()
   
   // General State
-  const [businessName, setBusinessName] = useState('Juan Mini Grocery')
-  const [address, setAddress] = useState('Barobo, Agusan del Sur')
-  const [contact, setContact] = useState('09XX XXX XXXX')
+  const [businessName, setBusinessName] = useState('')
+  const [address, setAddress] = useState('')
+  const [contact, setContact] = useState('')
+  const [ownerName, setOwnerName] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
   
   // Backup State
   const [backups, setBackups] = useState<any[]>([])
@@ -26,8 +28,39 @@ export default function Settings() {
   const [restoreSuccess, setRestoreSuccess] = useState(false)
 
   useEffect(() => {
+    loadSettings()
     loadBackups()
   }, [])
+
+  const loadSettings = async () => {
+    try {
+      const settings = await window.ipcRenderer.invoke('get-settings')
+      if (settings.businessName) setBusinessName(settings.businessName)
+      if (settings.businessAddress) setAddress(settings.businessAddress)
+      if (settings.businessOwner) setOwnerName(settings.businessOwner)
+      if (settings.businessContact) setContact(settings.businessContact)
+    } catch (err) {
+      console.error('Failed to load settings:', err)
+    }
+  }
+
+  const handleSaveSettings = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSaving(true)
+    try {
+      await window.ipcRenderer.invoke('save-settings', {
+        businessName,
+        businessAddress: address,
+        businessOwner: ownerName,
+        businessContact: contact
+      })
+      alert('Settings saved successfully.')
+    } catch (err: any) {
+      alert('Failed to save settings: ' + err.message)
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   const loadBackups = async () => {
     try {
@@ -116,20 +149,29 @@ export default function Settings() {
         <TabsContent value="general">
           <Card>
             <CardHeader><CardTitle>Business Information</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-bold">Business Name</label>
-                <Input value={businessName} onChange={e=>setBusinessName(e.target.value)} />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-bold">Address</label>
-                <Input value={address} onChange={e=>setAddress(e.target.value)} />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-bold">Contact Number</label>
-                <Input value={contact} onChange={e=>setContact(e.target.value)} />
-              </div>
-              <Button className="mt-4"><Save className="w-4 h-4 mr-2" /> Save Settings</Button>
+            <CardContent>
+              <form onSubmit={handleSaveSettings} className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-bold">Business Name</label>
+                  <Input value={businessName} onChange={e=>setBusinessName(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold">Address</label>
+                  <Input value={address} onChange={e=>setAddress(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold">Owner / Manager Name</label>
+                  <Input value={ownerName} onChange={e=>setOwnerName(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold">Contact Number</label>
+                  <Input value={contact} onChange={e=>setContact(e.target.value)} />
+                </div>
+                <Button type="submit" className="mt-4" disabled={isSaving}>
+                  <Save className="w-4 h-4 mr-2" /> 
+                  {isSaving ? 'Saving...' : 'Save Settings'}
+                </Button>
+              </form>
             </CardContent>
           </Card>
         </TabsContent>

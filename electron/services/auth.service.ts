@@ -1,7 +1,7 @@
 import { PrismaClient, User } from '@prisma/client'
 import bcrypt from 'bcryptjs'
-
-const prisma = getPrisma()
+import { getPrisma } from './db.service'
+import { logger } from './log.service'
 
 // Secure in-memory session state
 export let currentUser: Omit<User, 'password'> | null = null
@@ -31,35 +31,36 @@ export function requirePermission(permission: string) {
 }
 
 export async function ensureDefaultAdmin() {
-  // NO-OP in V1. This used to create an admin account automatically.
-  // Instead, the first-run setup wizard will handle this now.
+  // NO-OP in V1.
 }
 
 export async function setupFirstRun(payload: any) {
   const { businessName, address, ownerName, adminUsername, adminPassword } = payload
   const prisma = getPrisma()
-  
-  // Create first admin
-  const bcrypt = require('bcryptjs')
-  const hash = await bcrypt.hash(adminPassword, 10)
-  const admin = await prisma.user.create({
-    data: {
-      username: adminUsername,
-      password: hash,
-      role: 'ADMIN',
-      mustChangePassword: false
-    }
-  })
 
-  // In a real app we'd save the business info to settings table, 
-  // but for now we'll just log it.
-  const { logger } = require('./log.service')
+  const hash = await bcrypt.hash(adminPassword, 10)
+
+  await prisma.$transaction([
+    prisma.user.create({
+      data: {
+        username: adminUsername,
+        password: hash,
+        role: 'ADMIN',
+        mustChangePassword: false
+      }
+    }),
+    prisma.setting.create({ data: { key: 'businessName', value: businessName } }),
+    prisma.setting.create({ data: { key: 'businessAddress', value: address } }),
+    prisma.setting.create({ data: { key: 'businessOwner', value: ownerName } })
+  ])
+
   logger.info(`First-run setup completed for business: ${businessName}`)
 
   return true
 }
 
-export async function login(username: string, password: string):Promise<Omit<User, 'password'>> {
+export async function login(username: string, password: string): Promise<Omit<User, 'password'>> {
+  const prisma = getPrisma()
   const user = await prisma.user.findUnique({ where: { username } })
   if (!user) throw new Error('Invalid username or password')
   if (user.status !== 'ACTIVE') throw new Error('User account is deactivated')
@@ -82,6 +83,7 @@ export async function login(username: string, password: string):Promise<Omit<Use
 }
 
 export async function logout() {
+  const prisma = getPrisma()
   if (currentUser) {
     await prisma.auditLog.create({
       data: {

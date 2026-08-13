@@ -7,10 +7,20 @@ export function registerLicenseIPC() {
     const isFirstRun = await isDatabaseEmpty()
     const installId = await getInstallationId()
     let license = { valid: false, restricted: true, license: null }
+    let businessName = "JUAN MINI GROCERY" // Fallback
+
     if (!isFirstRun) {
       license = await verifyLicense()
+      
+      const { getPrisma } = require('../services/db.service')
+      const prisma = getPrisma()
+      const bNameSetting = await prisma.setting.findUnique({ where: { key: 'businessName' } })
+      if (bNameSetting) {
+        businessName = bNameSetting.value
+      }
     }
-    return { isFirstRun, license, installId }
+    
+    return { isFirstRun, license, installId, businessName }
   })
 
   ipcMain.handle('license-activate', async (event, licenseString: string) => {

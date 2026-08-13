@@ -49,10 +49,13 @@ export async function getDashboardKPIs(range: string) {
   const grossProfit = items.reduce((sum, item) => sum + ((item.unitPrice - item.unitCost) * item.quantity), 0)
   const itemsSold = items.reduce((sum, item) => sum + item.quantity, 0)
 
-  // Low stock count
-  const lowStock = await prisma.product.count({
-    where: { status: 'ACTIVE', currentStock: { lte: prisma.product.fields.reorderLevel } }
+  // Low stock count (filter in memory to avoid Prisma column comparison syntax issues)
+  const allActiveProducts = await prisma.product.findMany({
+    where: { status: 'ACTIVE' },
+    select: { currentStock: true, reorderLevel: true }
   })
+  
+  const lowStock = allActiveProducts.filter(p => p.currentStock <= p.reorderLevel).length
 
   return {
     sales: sales._sum.netAmount || 0,
@@ -128,11 +131,14 @@ export async function getPaymentMethods(range: string) {
 }
 
 export async function getLowStockProducts() {
-  return await prisma.product.findMany({
-    where: { status: 'ACTIVE', currentStock: { lte: prisma.product.fields.reorderLevel } },
-    orderBy: { currentStock: 'asc' },
-    take: 10
+  const allActive = await prisma.product.findMany({
+    where: { status: 'ACTIVE' }
   })
+  
+  return allActive
+    .filter(p => p.currentStock <= p.reorderLevel)
+    .sort((a, b) => a.currentStock - b.currentStock)
+    .slice(0, 10)
 }
 
 export async function getReport(type: string, range: string) {
