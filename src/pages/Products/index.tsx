@@ -22,7 +22,7 @@ export default function Products() {
   const [newCategoryName, setNewCategoryName] = useState('')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [formData, setFormData] = useState<Partial<Product>>({
-    barcode: '', name: '', categoryId: '', unit: 'pcs', costPrice: 0, sellingPrice: 0, currentStock: 0, reorderLevel: 0, status: 'ACTIVE'
+    barcode: '', name: '', categoryId: '', unit: 'pcs', costPrice: 0, sellingPrice: 0, currentStock: 0, reorderLevel: 0, expiryDate: null, status: 'ACTIVE'
   })
   const searchInputRef = useRef<HTMLInputElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -96,7 +96,7 @@ export default function Products() {
     } else {
       setEditingId(null)
       setFormData({
-        barcode: '', name: '', categoryId: categories[0]?.id || '', unit: 'pcs', costPrice: 0, sellingPrice: 0, currentStock: 0, reorderLevel: 0, status: 'ACTIVE'
+        barcode: '', name: '', categoryId: categories[0]?.id || '', unit: 'pcs', costPrice: 0, sellingPrice: 0, currentStock: 0, reorderLevel: 0, expiryDate: null, status: 'ACTIVE'
       })
     }
     setIsModalOpen(true)
@@ -116,7 +116,7 @@ export default function Products() {
   }
 
   const handleExportCSV = () => {
-    const headers = ['Barcode', 'Name', 'Category', 'Cost Price', 'Selling Price', 'Current Stock', 'Reorder Level']
+    const headers = ['Barcode', 'Name', 'Category', 'Cost Price', 'Selling Price', 'Current Stock', 'Reorder Level', 'Expiry Date (YYYY-MM-DD)']
     const rows = products.map(p => [
       p.barcode || '',
       `"${p.name.replace(/"/g, '""')}"`,
@@ -124,7 +124,8 @@ export default function Products() {
       p.costPrice,
       p.sellingPrice,
       p.currentStock,
-      p.reorderLevel
+      p.reorderLevel,
+      p.expiryDate ? new Date(p.expiryDate).toISOString().split('T')[0] : ''
     ].join(','))
     
     const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\\n')
@@ -167,7 +168,8 @@ export default function Products() {
           costPrice: cleanCol(cols[3]),
           sellingPrice: cleanCol(cols[4]),
           currentStock: cleanCol(cols[5]),
-          reorderLevel: cleanCol(cols[6])
+          reorderLevel: cleanCol(cols[6]),
+          expiryDate: cleanCol(cols[7]) || null
         }
       }).filter(p => p.name) // name is required
 
@@ -194,6 +196,7 @@ export default function Products() {
         sellingPrice: Number(formData.sellingPrice),
         currentStock: Number(formData.currentStock),
         reorderLevel: Number(formData.reorderLevel),
+        expiryDate: formData.expiryDate ? new Date(formData.expiryDate) : null
       }
 
       if (editingId) {
@@ -408,6 +411,15 @@ export default function Products() {
                 value={formData.reorderLevel === 0 ? '' : formData.reorderLevel} 
                 onChange={(e) => setFormData({...formData, reorderLevel: Number(e.target.value)})} 
                 onFocus={(e) => e.target.select()}
+              />
+            </div>
+            
+            <div className="space-y-2 col-span-2">
+              <Label>Expiry Date (Optional)</Label>
+              <Input 
+                type="date"
+                value={formData.expiryDate ? new Date(formData.expiryDate).toISOString().split('T')[0] : ''} 
+                onChange={(e) => setFormData({...formData, expiryDate: e.target.value ? new Date(e.target.value) : null})} 
               />
             </div>
           </div>

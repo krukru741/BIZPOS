@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron'
-import { getDashboardKPIs, getSalesTrend, getTopProducts, getPaymentMethods, getLowStockProducts } from '../services/dashboard.service'
+import { getDashboardKPIs, getSalesTrend, getTopProducts, getPaymentMethods, getInventoryAlerts, getRecentActivity } from '../services/dashboard.service'
 
 export function registerDashboardIPC() {
   ipcMain.handle('dashboard-kpis', async (event, range: string) => {
@@ -18,8 +18,12 @@ export function registerDashboardIPC() {
     return await getPaymentMethods(range)
   })
 
-  ipcMain.handle('dashboard-low-stock', async () => {
-    return await getLowStockProducts()
+  ipcMain.handle('dashboard-inventory-alerts', async () => {
+    return await getInventoryAlerts()
+  })
+
+  ipcMain.handle('dashboard-recent-activity', async () => {
+    return await getRecentActivity()
   })
 
   ipcMain.handle('dashboard-report', async (event, type: string, range: string) => {

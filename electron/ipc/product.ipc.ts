@@ -60,6 +60,7 @@ export function registerProductIPC() {
         sellingPrice: parseFloat(p.sellingPrice) || 0,
         currentStock: parseInt(p.currentStock) || 0,
         reorderLevel: parseInt(p.reorderLevel) || 0,
+        expiryDate: p.expiryDate ? new Date(p.expiryDate) : null,
         status: 'ACTIVE'
       }
 
