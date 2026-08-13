@@ -80,30 +80,81 @@ export default function CashSession() {
   }
 
   if (!session) {
+    const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    const [isOpening, setIsOpening] = useState(false)
+    const [success, setSuccess] = useState(false)
+
+    const handleFormSubmit = async (e: React.FormEvent) => {
+      e.preventDefault()
+      setIsOpening(true)
+      try {
+        await window.ipcRenderer.invoke('cash-open-session', parseFloat(openingCash || '0'))
+        setSuccess(true)
+        setTimeout(() => {
+          loadSession()
+        }, 1000)
+      } catch (err: any) {
+        alert(err.message)
+        setIsOpening(false)
+      }
+    }
+
     return (
-      <div className="max-w-md mx-auto mt-20">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-center text-2xl flex flex-col items-center gap-4">
-              <div className="p-4 bg-blue-100 text-blue-600 rounded-full"><Wallet size={32} /></div>
-              Open Cash Session
-            </CardTitle>
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+        <Card className="w-full max-w-md rounded-2xl shadow-lg border-0 bg-white">
+          <CardHeader className="text-center pt-8 pb-4">
+            <div className="mx-auto w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 shadow-sm border border-blue-100">
+              <Wallet size={32} />
+            </div>
+            <CardTitle className="text-2xl font-black text-slate-800 tracking-tight">Open Cash Session</CardTitle>
+            <p className="text-slate-500 mt-2 font-medium">Start a new cash session for today's sales.</p>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleOpenSession} className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700">Opening Cash (₱)</label>
-                <Input 
-                  type="number" 
-                  step="0.01" 
-                  min="0"
-                  required
-                  value={openingCash} 
-                  onChange={e => setOpeningCash(e.target.value)} 
-                  className="h-12 text-2xl text-center font-bold"
-                />
+          <CardContent className="px-8 pb-8">
+            <div className="flex items-center justify-between bg-slate-50 p-4 rounded-xl mb-8 border border-slate-100">
+              <div>
+                <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Cashier</p>
+                <p className="font-semibold text-slate-800">{user?.username}</p>
               </div>
-              <Button type="submit" className="w-full h-12 text-lg font-bold">OPEN SESSION</Button>
+              <div className="text-right">
+                <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Date</p>
+                <p className="font-semibold text-slate-800">{today}</p>
+              </div>
+            </div>
+
+            <form onSubmit={handleFormSubmit} className="space-y-6">
+              <div className="space-y-3">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Opening Cash</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <span className="text-slate-400 font-bold text-xl">₱</span>
+                  </div>
+                  <Input 
+                    type="number" 
+                    step="0.01" 
+                    min="0"
+                    required
+                    value={openingCash}
+                    onChange={e => setOpeningCash(e.target.value)}
+                    className="pl-10 h-16 text-2xl font-black text-slate-800 rounded-xl bg-white border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all shadow-sm"
+                    placeholder="0.00"
+                    disabled={isOpening || success}
+                  />
+                </div>
+              </div>
+
+              {success ? (
+                <div className="w-full h-12 bg-emerald-50 text-emerald-600 rounded-xl font-bold flex items-center justify-center gap-2 border border-emerald-200">
+                  <span className="text-lg">🟢</span> Cash session opened successfully.
+                </div>
+              ) : (
+                <Button 
+                  type="submit" 
+                  disabled={isOpening || !openingCash} 
+                  className="w-full h-12 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-base tracking-wide transition-all shadow-md hover:shadow-lg disabled:opacity-70 disabled:hover:shadow-md"
+                >
+                  {isOpening ? 'Opening session...' : 'Open Cash Session'}
+                </Button>
+              )}
             </form>
           </CardContent>
         </Card>
