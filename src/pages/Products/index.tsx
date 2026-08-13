@@ -334,7 +334,7 @@ export default function Products() {
                   <SelectTrigger className="flex-1">
                     <SelectValue placeholder="Select Category" />
                   </SelectTrigger>
-                  <SelectContent className="z-50 shadow-lg bg-white">
+                  <SelectContent className="z-50 shadow-lg bg-white absolute mt-1 w-full">
                     {categories.map(c => (
                       <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                     ))}
