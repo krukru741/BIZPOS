@@ -158,7 +158,10 @@ export default function Dashboard() {
               <div className="h-52 flex flex-col items-center justify-center text-slate-400 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
                 <TrendingUp size={28} className="mb-2 text-slate-300" />
                 <p className="font-semibold text-sm text-slate-500">No sales yet for this period</p>
-                <p className="text-xs text-slate-400 mt-1">Complete your first transaction to see your sales trend.</p>
+                <p className="text-xs text-slate-400 mt-1 mb-4">Complete your first transaction to see your sales trend.</p>
+                <Button size="sm" onClick={() => navigate('/pos')} className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 gap-2">
+                  Go to POS <ArrowRight size={14} />
+                </Button>
               </div>
             ) : (
               <div className="h-52">
