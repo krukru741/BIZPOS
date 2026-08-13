@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/componen
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { useAuth } from '@/context/AuthContext'
 import { Search, Plus, Minus, Trash2, ShoppingCart, AlertCircle } from 'lucide-react'
 import type { Product } from '@prisma/client'
 
@@ -13,6 +14,7 @@ interface CartItem extends Product {
 }
 
 export default function POS() {
+  const { user } = useAuth()
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [products, setProducts] = useState<Product[]>([])
@@ -50,6 +52,10 @@ export default function POS() {
   useEffect(() => {
     // Initial load of some products for the grid
     searchProducts('')
+    // Auto-focus search input on load
+    setTimeout(() => {
+      searchInputRef.current?.focus()
+    }, 100)
   }, [])
 
   const searchProducts = async (q: string) => {
@@ -216,6 +222,7 @@ export default function POS() {
       setIsPaymentOpen(false)
       setAmountReceived('')
       searchProducts('') // Refresh stock in grid
+      setTimeout(() => searchInputRef.current?.focus(), 300) // Reset focus for next scan
     } catch (err: any) {
       alert("Transaction failed: " + (err.message || 'Unknown error'))
     } finally {
@@ -232,14 +239,27 @@ export default function POS() {
           <Input 
             ref={searchInputRef}
             placeholder="Search / Scan Barcode (F2)" 
-            className="pl-10 text-lg py-6"
+            className="pl-10 text-lg py-6 shadow-sm border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all"
             value={search}
             onChange={handleSearchChange}
           />
         </div>
         
+        {search.trim() === '' ? (
+          <div className="text-xs font-bold text-slate-500 uppercase tracking-widest pl-1 mt-2">Quick Add Products</div>
+        ) : (
+          <div className="text-xs font-bold text-blue-500 uppercase tracking-widest pl-1 mt-2">Search Results ({products.length})</div>
+        )}
+
         <div className="grid grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto content-start p-1">
-          {products.map(p => (
+          {products.length === 0 ? (
+            <div className="col-span-full py-12 text-center text-slate-400 bg-slate-50/50 rounded-xl border border-dashed border-slate-200 mt-4">
+              <ShoppingCart size={32} className="mx-auto mb-3 text-slate-300" />
+              <p className="font-semibold text-sm text-slate-500">No quick-add products available.</p>
+              <p className="text-xs text-slate-400 mt-1">Add items in Products to display them here.</p>
+            </div>
+          ) : (
+            products.map(p => (
             <Card 
               key={p.id} 
               className={`cursor-pointer transition-colors ${p.currentStock > 0 ? 'hover:bg-slate-100' : 'opacity-50'}`}
@@ -251,17 +271,17 @@ export default function POS() {
                 <div className="text-xs text-slate-400 mt-2">Stock: {p.currentStock}</div>
               </CardContent>
             </Card>
-          ))}
+          )))}
         </div>
       </div>
 
       {/* Right Panel: Cart */}
       <div className="w-[400px] flex flex-col bg-white rounded-xl border shadow-sm">
         <div className="p-4 border-b bg-slate-50 rounded-t-xl flex justify-between items-center">
-          <h2 className="font-bold text-lg flex items-center gap-2">
-            <ShoppingCart className="w-5 h-5" /> CURRENT SALE
+          <h2 className="font-bold text-lg flex items-center gap-2 text-slate-800">
+            <ShoppingCart className="w-5 h-5 text-blue-600" /> CURRENT SALE
           </h2>
-          <span className="text-xs text-slate-500">Cashier: Juan</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-widest bg-slate-200 px-2 py-1 rounded">Cashier: {user?.username}</span>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -313,15 +333,15 @@ export default function POS() {
           </div>
           
           <div className="flex gap-2 pt-2">
-            <Button variant="outline" className="flex-1" onClick={() => setCart([])} disabled={cart.length === 0}>
+            <Button variant="outline" className="flex-1 disabled:opacity-50 disabled:cursor-not-allowed" onClick={() => setCart([])} disabled={cart.length === 0}>
               Clear (F9)
             </Button>
-            <Button variant="outline" className="flex-1" disabled={cart.length === 0}>
+            <Button variant="outline" className="flex-1 disabled:opacity-50 disabled:cursor-not-allowed" disabled={cart.length === 0}>
               Hold (F8)
             </Button>
           </div>
           <Button 
-            className="w-full text-lg py-6 bg-blue-600 hover:bg-blue-700" 
+            className="w-full text-lg py-6 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md" 
             disabled={cart.length === 0}
             onClick={() => setIsPaymentOpen(true)}
           >
