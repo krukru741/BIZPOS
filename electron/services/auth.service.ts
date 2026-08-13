@@ -8,10 +8,10 @@ export let currentUser: Omit<User, 'password'> | null = null
 
 const PERMISSIONS: Record<string, string[]> = {
   ADMIN: [
-    'users.manage', 'settings.manage', 'inventory.adjust', 'reports.view', 'profit.view', 'cash.manage', 'backup.manage', 'pos.sell'
+    'users.manage', 'settings.manage', 'inventory.adjust', 'reports.view', 'profit.view', 'cash.manage', 'cash_session.manage', 'backup.manage', 'pos.sell'
   ],
   MANAGER: [
-    'inventory.adjust', 'reports.view', 'cash.manage', 'pos.sell'
+    'inventory.adjust', 'reports.view', 'cash.manage', 'cash_session.manage', 'pos.sell'
   ],
   CASHIER: [
     'pos.sell', 'sales.view_own', 'cash_session.manage'
