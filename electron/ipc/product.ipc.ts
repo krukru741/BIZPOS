@@ -47,4 +47,36 @@ export function registerProductIPC() {
       data: { status: 'INACTIVE' }
     })
   })
+
+  ipcMain.handle('bulk-import-products', async (event, productsArray: any[]) => {
+    // Sanitize and validate
+    const operations = productsArray.map(p => {
+      const barcode = p.barcode?.trim()
+      const data = {
+        barcode: barcode || undefined, // undefined prevents unique constraint error if multiple have no barcode, though typically upsert requires unique
+        name: p.name,
+        categoryId: p.categoryId,
+        costPrice: parseFloat(p.costPrice) || 0,
+        sellingPrice: parseFloat(p.sellingPrice) || 0,
+        currentStock: parseInt(p.currentStock) || 0,
+        reorderLevel: parseInt(p.reorderLevel) || 0,
+        status: 'ACTIVE'
+      }
+
+      // If barcode exists, we can upsert. If not, we just create.
+      if (barcode) {
+        return prisma.product.upsert({
+          where: { barcode },
+          update: data,
+          create: data
+        })
+      } else {
+        return prisma.product.create({
+          data
+        })
+      }
+    })
+
+    return await prisma.$transaction(operations)
+  })
 }
