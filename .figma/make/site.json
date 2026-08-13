@@ -1,0 +1,11 @@
+{
+  "title": "FreshMart App",
+  "description": "Create and navigate a fully designed multi-page app with seamless links, enabling users to visualize and explore complete app workflows effortlessly.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
