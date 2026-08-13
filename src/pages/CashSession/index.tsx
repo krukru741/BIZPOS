@@ -64,7 +64,8 @@ export default function CashSession() {
 
   const confirmCloseSession = async () => {
     try {
-      await window.ipcRenderer.invoke('cash-close-session', { actualCash: parseFloat(actualCash || '0'), note: closingNote })
+      const cleanActualCash = actualCash ? parseFloat(actualCash.replace(/,/g, '')) : 0
+      await window.ipcRenderer.invoke('cash-close-session', { actualCash: cleanActualCash, note: closingNote })
       setSession(null)
       setBreakdown(null)
       setActualCash('')
@@ -96,9 +97,10 @@ export default function CashSession() {
 
   const handleActualCashBlur = () => {
     if (actualCash) {
-      const parsed = parseFloat(actualCash)
+      const cleanVal = actualCash.replace(/,/g, '')
+      const parsed = parseFloat(cleanVal)
       if (!isNaN(parsed)) {
-        setActualCash(parsed.toFixed(2))
+        setActualCash(parsed.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
       }
     }
   }
@@ -172,7 +174,8 @@ export default function CashSession() {
   if (!breakdown) return null // loading breakdown
 
   const expectedCash = breakdown.expectedCash
-  const variance = actualCash ? Math.round((parseFloat(actualCash) - expectedCash) * 100) / 100 : 0
+  const parsedActualCash = actualCash ? parseFloat(actualCash.replace(/,/g, '')) : 0
+  const variance = actualCash && !isNaN(parsedActualCash) ? Math.round((parsedActualCash - expectedCash) * 100) / 100 : 0
   const isShort = variance < 0
   const isOver = variance > 0
   const isBalanced = variance === 0 && actualCash !== ''
@@ -285,11 +288,10 @@ export default function CashSession() {
                       <span className="text-slate-400 font-bold text-2xl">₱</span>
                     </div>
                     <Input 
-                      type="number" 
-                      step="0.01" 
+                      type="text" 
                       required
                       value={actualCash} 
-                      onChange={e => setActualCash(e.target.value)} 
+                      onChange={e => setActualCash(e.target.value.replace(/[^0-9.,]/g, ''))} 
                       onBlur={handleActualCashBlur}
                       className="pl-12 h-20 text-4xl font-black text-slate-800 rounded-xl bg-white border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all shadow-sm tracking-tight"
                       placeholder="0.00"
@@ -310,8 +312,8 @@ export default function CashSession() {
                     
                     <div className="flex-1 font-bold text-sm">
                       {isBalanced && 'Balanced (₱0.00)'}
-                      {isShort && `Short by -₱${Math.abs(variance).toFixed(2)}`}
-                      {isOver && `Over by +₱${variance.toFixed(2)}`}
+                      {isShort && `Short by -₱${Math.abs(variance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+                      {isOver && `Over by +₱${variance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                     </div>
                   </div>
                 )}
@@ -332,7 +334,8 @@ export default function CashSession() {
                 <div className="pt-4">
                   <Button 
                     type="submit" 
-                    className="w-full h-14 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-lg tracking-wide transition-all shadow-lg hover:shadow-xl"
+                    disabled={!isBalanced && closingNote.trim().length < 3}
+                    className="w-full h-14 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-lg tracking-wide transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:hover:shadow-lg disabled:cursor-not-allowed"
                   >
                     CLOSE SESSION
                   </Button>
@@ -390,12 +393,12 @@ export default function CashSession() {
               </div>
               <div>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Actual</p>
-                <p className="font-bold text-slate-900 mt-1">₱{parseFloat(actualCash).toFixed(2)}</p>
+                <p className="font-bold text-slate-900 mt-1">₱{parsedActualCash.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
               </div>
               <div>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Variance</p>
                 <p className={`font-bold mt-1 ${isBalanced ? 'text-emerald-600' : isShort ? 'text-rose-600' : 'text-amber-600'}`}>
-                  {variance > 0 ? '+' : ''}₱{variance.toFixed(2)}
+                  {variance > 0 ? '+' : ''}₱{variance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
             </div>
