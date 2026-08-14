@@ -12,9 +12,7 @@ interface CartItem {
 
 type PaymentMethod = "cash" | "qr" | "card";
 
-interface POSProps { onNavigate: (p: string) => void; }
-
-export default function POS({ onNavigate }: POSProps) {
+export default function POS() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -173,7 +171,7 @@ export default function POS({ onNavigate }: POSProps) {
               ["Subtotal", `₱${subtotal.toLocaleString("en-PH")}`],
               discount > 0 ? [`Discount (${discount}%)`, `-₱${discountAmt.toLocaleString("en-PH")}`] : null,
               ["GST (5%)", `₱${tax.toLocaleString("en-PH")}`],
-            ].filter(Boolean).map(([k, v]) => (
+            ].filter((row): row is string[] => row !== null).map(([k, v]) => (
               <div key={k as string} style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
                 <span style={{ color: "var(--muted-foreground)" }}>{k}</span>
                 <span style={{ color: (v as string).startsWith("-") ? "#EF4444" : "var(--foreground)" }}>{v}</span>
