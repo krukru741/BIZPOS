@@ -234,7 +234,7 @@ export default function POS() {
             {/* QR code simulation */}
             <div style={{ width: 200, height: 200, margin: "0 auto 20px", background: "var(--foreground)", borderRadius: 16, display: "grid", gridTemplateColumns: "repeat(10,1fr)", gap: 1, padding: 12 }}>
               {[...Array(100)].map((_, i) => (
-                <div key={i} style={{ background: [2,3,4,12,13,14,22,23,24,5,15,25,30,31,32,40,41,42,50,51,52,37,38,39,47,48,49,57,58,59,60,61,62,70,71,72,80,81,82,7,17,27,65,75,85,45,55,46,56,66,76,86,43,53,63,73,83,93,44,54,64,74,84,94,92,91,90,89,88,20,21,8,9,18,19,28,29,68,69,78,79,99,98,97,96].includes(i) ? "var(--card)" : "var(--foreground)", borderRadius: 1 }} />
+                <div key={i} style={{ background: [2, 3, 4, 12, 13, 14, 22, 23, 24, 5, 15, 25, 30, 31, 32, 40, 41, 42, 50, 51, 52, 37, 38, 39, 47, 48, 49, 57, 58, 59, 60, 61, 62, 70, 71, 72, 80, 81, 82, 7, 17, 27, 65, 75, 85, 45, 55, 46, 56, 66, 76, 86, 43, 53, 63, 73, 83, 93, 44, 54, 64, 74, 84, 94, 92, 91, 90, 89, 88, 20, 21, 8, 9, 18, 19, 28, 29, 68, 69, 78, 79, 99, 98, 97, 96].includes(i) ? "var(--card)" : "var(--foreground)", borderRadius: 1 }} />
               ))}
             </div>
 
