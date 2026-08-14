@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Search, Phone, Mail, Eye, UserPlus } from "lucide-react";
 import { customers } from "../data/mockData";
 
@@ -58,11 +58,11 @@ export default function Customers() {
                       <span style={{ fontSize: 11, color: "var(--muted-foreground)" }}>{c.email}</span>
                     </div>
                   </td>
-                  <td style={{ fontWeight: 700, color: "var(--primary)" }}>₹{c.totalPurchases.toLocaleString("en-IN")}</td>
+                  <td style={{ fontWeight: 700, color: "var(--primary)" }}>₱{c.totalPurchases.toLocaleString("en-IN")}</td>
                   <td style={{ fontSize: 13 }}>{c.totalOrders}</td>
                   <td>
                     {c.outstanding > 0
-                      ? <span className="badge badge-red">₹{c.outstanding.toLocaleString("en-IN")}</span>
+                      ? <span className="badge badge-red">₱{c.outstanding.toLocaleString("en-IN")}</span>
                       : <span className="badge badge-green">Clear</span>}
                   </td>
                   <td style={{ fontSize: 13, color: "var(--muted-foreground)" }}>{c.lastVisit}</td>
@@ -84,7 +84,7 @@ export default function Customers() {
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, marginBottom: 16 }}>
                 <div style={{ width: 64, height: 64, background: "linear-gradient(135deg,#22C55E,#16A34A)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "#fff", fontSize: 24 }}>{selected.name.charAt(0)}</div>
                 <h3 style={{ margin: 0, fontWeight: 800 }}>{selected.name}</h3>
-                {selected.outstanding > 0 && <span className="badge badge-red">Outstanding: ₹{selected.outstanding.toLocaleString("en-IN")}</span>}
+                {selected.outstanding > 0 && <span className="badge badge-red">Outstanding: ₱{selected.outstanding.toLocaleString("en-IN")}</span>}
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13 }}><Phone size={14} color="var(--muted-foreground)" />{selected.phone}</div>
@@ -94,7 +94,7 @@ export default function Customers() {
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
               {[
-                { label: "Total Spent", value: `₹${selected.totalPurchases.toLocaleString("en-IN")}`, color: "#22C55E" },
+                { label: "Total Spent", value: `₱${selected.totalPurchases.toLocaleString("en-IN")}`, color: "#22C55E" },
                 { label: "Orders", value: selected.totalOrders, color: "#3B82F6" },
               ].map(({ label, value, color }) => (
                 <div key={label} className="metric-card" style={{ padding: 14 }}>
@@ -116,7 +116,7 @@ export default function Customers() {
                     <p style={{ margin: 0, fontSize: 13, fontWeight: 600 }}>{p.items} items</p>
                     <p style={{ margin: 0, fontSize: 11, color: "var(--muted-foreground)" }}>{p.date}</p>
                   </div>
-                  <span style={{ fontWeight: 700, color: "var(--primary)" }}>₹{p.amount.toLocaleString("en-IN")}</span>
+                  <span style={{ fontWeight: 700, color: "var(--primary)" }}>₱{p.amount.toLocaleString("en-IN")}</span>
                 </div>
               ))}
             </div>

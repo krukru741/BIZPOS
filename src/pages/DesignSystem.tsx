@@ -1,4 +1,4 @@
-import { CheckCircle, AlertTriangle, Info, XCircle, Leaf } from "lucide-react";
+﻿import { CheckCircle, AlertTriangle, Info, XCircle, Leaf } from "lucide-react";
 
 export default function DesignSystem() {
   const colors = [
@@ -59,7 +59,7 @@ export default function DesignSystem() {
             { label: "H3", size: 18, weight: 600, text: "Recent Transactions" },
             { label: "Body", size: 14, weight: 400, text: "All products are organized by category for quick access during checkout." },
             { label: "Caption", size: 12, weight: 500, text: "Last updated 5 minutes ago · GST included" },
-            { label: "Mono", size: 13, weight: 500, text: "INV-2024-0842 · SKU-MILK-001 · ₹1,234.56", mono: true },
+            { label: "Mono", size: 13, weight: 500, text: "INV-2024-0842 · SKU-MILK-001 · ₱1,234.56", mono: true },
           ].map(({ label, size, weight, text, mono }) => (
             <div key={label} style={{ display: "flex", alignItems: "baseline", gap: 16, paddingBottom: 16, borderBottom: "1px solid var(--border)" }}>
               <span style={{ minWidth: 60, fontSize: 11, fontWeight: 700, color: "var(--muted-foreground)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</span>
@@ -117,7 +117,7 @@ export default function DesignSystem() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
           <div className="metric-card">
             <p style={{ margin: 0, fontSize: 12, color: "var(--muted-foreground)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>Metric Card</p>
-            <h3 style={{ margin: "4px 0 4px", fontSize: 28, fontWeight: 800, color: "#22C55E" }}>₹38,420</h3>
+            <h3 style={{ margin: "4px 0 4px", fontSize: 28, fontWeight: 800, color: "#22C55E" }}>₱38,420</h3>
             <p style={{ margin: 0, fontSize: 12, color: "var(--muted-foreground)" }}>+12.3% vs yesterday</p>
           </div>
           <div className="card" style={{ padding: 20 }}>
@@ -128,7 +128,7 @@ export default function DesignSystem() {
             <div style={{ fontSize: 32, textAlign: "center" }}>🥛</div>
             <p style={{ margin: 0, fontWeight: 700, fontSize: 13 }}>Organic Whole Milk</p>
             <p style={{ margin: 0, fontSize: 11, color: "var(--muted-foreground)" }}>Amul · Dairy</p>
-            <span style={{ fontWeight: 800, fontSize: 15, color: "var(--primary)" }}>₹55</span>
+            <span style={{ fontWeight: 800, fontSize: 15, color: "var(--primary)" }}>₱55</span>
           </div>
         </div>
       </section>

@@ -1,4 +1,4 @@
-import { Bell, AlertTriangle, CheckCircle, XCircle, Info, Truck } from "lucide-react";
+﻿import { Bell, AlertTriangle, CheckCircle, XCircle, Info, Truck } from "lucide-react";
 import { notifications } from "../data/mockData";
 
 interface NotificationsProps {

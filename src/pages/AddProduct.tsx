@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Upload, X, Save } from "lucide-react";
 import { categories } from "../data/mockData";
 
@@ -74,10 +74,10 @@ export default function AddProduct({ onNavigate }: AddProductProps) {
             <h3 style={{ margin: "0 0 16px", fontSize: 15, fontWeight: 700 }}>Pricing & Tax</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <Row>
-                <Field label="Buying Price (₹) *">
+                <Field label="Buying Price (₱) *">
                   <input className="input" type="number" value={form.buyingPrice} onChange={e => set("buyingPrice", e.target.value)} placeholder="0.00" />
                 </Field>
-                <Field label="Selling Price (₹) *">
+                <Field label="Selling Price (₱) *">
                   <input className="input" type="number" value={form.sellingPrice} onChange={e => set("sellingPrice", e.target.value)} placeholder="0.00" />
                 </Field>
               </Row>
@@ -157,7 +157,7 @@ export default function AddProduct({ onNavigate }: AddProductProps) {
               {[
                 ["Name", form.name || "—"],
                 ["Category", form.category || "—"],
-                ["Selling Price", form.sellingPrice ? `₹${form.sellingPrice}` : "—"],
+                ["Selling Price", form.sellingPrice ? `₱${form.sellingPrice}` : "—"],
                 ["Stock", form.stock ? `${form.stock} ${form.unit}` : "—"],
                 ["GST", `${form.gst}%`],
               ].map(([k, v]) => (

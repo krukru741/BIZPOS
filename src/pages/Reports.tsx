@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Download, TrendingUp, TrendingDown, FileText, Table } from "lucide-react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import { dailySalesData, monthlyRevenueData, topProducts } from "../data/mockData";
@@ -8,7 +8,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return (
     <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10, padding: "10px 14px", fontSize: 13 }}>
       <p style={{ margin: "0 0 6px", fontWeight: 700 }}>{label}</p>
-      {payload.map((p: any, i: number) => <p key={i} style={{ margin: "2px 0", color: p.color }}>{p.name}: ₹{p.value?.toLocaleString("en-IN")}</p>)}
+      {payload.map((p: any, i: number) => <p key={i} style={{ margin: "2px 0", color: p.color }}>{p.name}: ₱{p.value?.toLocaleString("en-IN")}</p>)}
     </div>
   );
 };
@@ -17,10 +17,10 @@ export default function Reports() {
   const [period, setPeriod] = useState("monthly");
 
   const kpis = [
-    { label: "Total Revenue", value: "₹3,56,000", change: "+7.4%", up: true },
-    { label: "Total Profit", value: "₹85,440", change: "+4.1%", up: true },
+    { label: "Total Revenue", value: "₱3,56,000", change: "+7.4%", up: true },
+    { label: "Total Profit", value: "₱85,440", change: "+4.1%", up: true },
     { label: "Total Orders", value: "1,247", change: "+12.3%", up: true },
-    { label: "Avg Order Value", value: "₹285", change: "-2.1%", up: false },
+    { label: "Avg Order Value", value: "₱285", change: "-2.1%", up: false },
     { label: "Inventory Turnover", value: "4.2x", change: "+0.8x", up: true },
     { label: "Gross Margin", value: "24%", change: "+1.2%", up: true },
   ];
@@ -81,7 +81,7 @@ export default function Reports() {
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} tickFormatter={v => "₹" + v / 1000 + "k"} />
+              <YAxis tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} tickFormatter={v => "₱" + v / 1000 + "k"} />
               <Tooltip content={<CustomTooltip />} />
               <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#22C55E" strokeWidth={2.5} fill="url(#rev)" />
               <Area type="monotone" dataKey="profit" name="Profit" stroke="#84CC16" strokeWidth={2.5} fill="url(#pro)" />
@@ -97,7 +97,7 @@ export default function Reports() {
               <div key={i}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
                   <span style={{ fontSize: 13, fontWeight: 600 }}>{p.name}</span>
-                  <span style={{ fontSize: 13, fontWeight: 700 }}>₹{(p.revenue / 1000).toFixed(1)}k</span>
+                  <span style={{ fontSize: 13, fontWeight: 700 }}>₱{(p.revenue / 1000).toFixed(1)}k</span>
                 </div>
                 <div style={{ height: 6, background: "var(--muted)", borderRadius: 3 }}>
                   <div style={{ width: `${(p.revenue / topProducts[0].revenue) * 100}%`, height: "100%", background: ["#22C55E","#3B82F6","#F59E0B","#8B5CF6","#EF4444"][i], borderRadius: 3, transition: "width 0.5s ease" }} />

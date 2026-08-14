@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Save, Upload, Sun, Moon } from "lucide-react";
 
 interface SettingsProps {
@@ -112,12 +112,12 @@ export default function Settings({ darkMode, onToggleDark }: SettingsProps) {
                   <p style={{ borderTop: "1px dashed #ccc", margin: "0 0 8px", paddingTop: 8 }}>INV-2024-0842</p>
                   <p style={{ margin: "0 0 8px" }}>Date: 15/01/2024 14:32</p>
                   <div style={{ borderTop: "1px dashed #ccc", paddingTop: 8, marginBottom: 8 }}>
-                    {["Organic Milk 2x₹55=₹110", "Sourdough 1x₹55=₹55", "Brown Rice 1x₹279=₹279"].map(i => <p key={i} style={{ margin: "0 0 4px" }}>{i}</p>)}
+                    {["Organic Milk 2x₱55=₱110", "Sourdough 1x₱55=₱55", "Brown Rice 1x₱279=₱279"].map(i => <p key={i} style={{ margin: "0 0 4px" }}>{i}</p>)}
                   </div>
                   <div style={{ borderTop: "1px dashed #ccc", paddingTop: 8 }}>
-                    <p style={{ margin: "0 0 2px" }}>Subtotal: ₹444</p>
-                    <p style={{ margin: "0 0 2px" }}>GST (5%): ₹22</p>
-                    <p style={{ margin: "0 0 8px", fontWeight: 700 }}>Total: ₹466</p>
+                    <p style={{ margin: "0 0 2px" }}>Subtotal: ₱444</p>
+                    <p style={{ margin: "0 0 2px" }}>GST (5%): ₱22</p>
+                    <p style={{ margin: "0 0 8px", fontWeight: 700 }}>Total: ₱466</p>
                   </div>
                   <p style={{ textAlign: "center", fontSize: 10, color: "#555" }}>Thank you for shopping!</p>
                 </div>

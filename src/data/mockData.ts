@@ -1,4 +1,4 @@
-export const products = [
+﻿export const products = [
   { id: 1, name: "Organic Whole Milk", sku: "MILK-001", barcode: "8901030784", category: "Dairy", brand: "Amul", buyingPrice: 42, sellingPrice: 55, gst: 5, stock: 120, minStock: 20, unit: "L", status: "active", image: "🥛" },
   { id: 2, name: "Sourdough Bread", sku: "BRD-042", barcode: "8902345678", category: "Bakery", brand: "Britannia", buyingPrice: 38, sellingPrice: 55, gst: 5, stock: 45, minStock: 10, unit: "pcs", status: "active", image: "🍞" },
   { id: 3, name: "Free Range Eggs", sku: "EGG-012", barcode: "8903456789", category: "Dairy", brand: "Farm Fresh", buyingPrice: 72, sellingPrice: 95, gst: 0, stock: 8, minStock: 12, unit: "doz", status: "active", image: "🥚" },
@@ -87,9 +87,9 @@ export const topProducts = [
 
 export const notifications = [
   { id: 1, type: "warning", title: "Low Stock Alert", message: "Free Range Eggs — only 8 units left (min: 12)", time: "10 min ago", read: false },
-  { id: 2, type: "success", title: "Payment Received", message: "INV-2024-0842 — ₹847 via Cash", time: "28 min ago", read: false },
+  { id: 2, type: "success", title: "Payment Received", message: "INV-2024-0842 — ₱847 via Cash", time: "28 min ago", read: false },
   { id: 3, type: "warning", title: "Low Stock Alert", message: "Himalayan Pink Salt — only 3 units left (min: 8)", time: "1 hr ago", read: false },
   { id: 4, type: "info", title: "Purchase Completed", message: "PO-2024-0142 — Metro Cash & Carry received", time: "3 hrs ago", read: true },
-  { id: 5, type: "success", title: "Payment Received", message: "INV-2024-0841 — ₹389 via UPI", time: "3 hrs ago", read: true },
-  { id: 6, type: "error", title: "Payment Failed", message: "Card transaction declined for ₹1,200", time: "5 hrs ago", read: true },
+  { id: 5, type: "success", title: "Payment Received", message: "INV-2024-0841 — ₱389 via UPI", time: "3 hrs ago", read: true },
+  { id: 6, type: "error", title: "Payment Failed", message: "Card transaction declined for ₱1,200", time: "5 hrs ago", read: true },
 ];

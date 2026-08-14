@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Plus, TrendingDown } from "lucide-react";
 import { expenses } from "../data/mockData";
 
@@ -16,7 +16,7 @@ export default function Expenses() {
       <div className="section-header">
         <div>
           <h1 className="page-title">Expenses</h1>
-          <p style={{ margin: "4px 0 0", color: "var(--muted-foreground)", fontSize: 14 }}>Total this month: <strong style={{ color: "var(--danger)" }}>₹{total.toLocaleString("en-IN")}</strong></p>
+          <p style={{ margin: "4px 0 0", color: "var(--muted-foreground)", fontSize: 14 }}>Total this month: <strong style={{ color: "var(--danger)" }}>₱{total.toLocaleString("en-IN")}</strong></p>
         </div>
         <button className="btn btn-primary" onClick={() => setShowModal(true)}><Plus size={15} /> Log Expense</button>
       </div>
@@ -31,7 +31,7 @@ export default function Expenses() {
               </div>
               <span className="badge badge-orange">{cat}</span>
             </div>
-            <p style={{ margin: 0, fontSize: 20, fontWeight: 800, color: "var(--danger)" }}>₹{amt.toLocaleString("en-IN")}</p>
+            <p style={{ margin: 0, fontSize: 20, fontWeight: 800, color: "var(--danger)" }}>₱{amt.toLocaleString("en-IN")}</p>
             <p style={{ margin: "2px 0 0", fontSize: 11, color: "var(--muted-foreground)" }}>{Math.round(amt / total * 100)}% of total</p>
           </div>
         ))}
@@ -49,7 +49,7 @@ export default function Expenses() {
                 <td style={{ fontSize: 13, color: "var(--muted-foreground)" }}>{e.date}</td>
                 <td><span className="badge badge-orange">{e.category}</span></td>
                 <td style={{ fontWeight: 500 }}>{e.description}</td>
-                <td style={{ fontWeight: 700, color: "var(--danger)" }}>₹{e.amount.toLocaleString("en-IN")}</td>
+                <td style={{ fontWeight: 700, color: "var(--danger)" }}>₱{e.amount.toLocaleString("en-IN")}</td>
                 <td><span className={`badge ${e.paid === "cash" ? "badge-green" : "badge-blue"}`}>{e.paid === "cash" ? "Cash" : "Bank"}</span></td>
               </tr>
             ))}
@@ -75,7 +75,7 @@ export default function Expenses() {
                 <input className="input" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="What was this expense for?" />
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <div><label className="form-label">Amount (₹)</label>
+                <div><label className="form-label">Amount (₱)</label>
                   <input className="input" type="number" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} placeholder="0" />
                 </div>
                 <div><label className="form-label">Date</label>

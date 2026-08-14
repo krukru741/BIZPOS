@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Search, Eye, Printer, RotateCcw, Filter } from "lucide-react";
 import { salesHistory } from "../data/mockData";
 
@@ -23,7 +23,7 @@ export default function Sales({ onNavigate }: SalesProps) {
       <div className="section-header">
         <div>
           <h1 className="page-title">Sales History</h1>
-          <p style={{ margin: "4px 0 0", color: "var(--muted-foreground)", fontSize: 14 }}>{filtered.length} transactions · ₹{totalRevenue.toLocaleString("en-IN")} revenue</p>
+          <p style={{ margin: "4px 0 0", color: "var(--muted-foreground)", fontSize: 14 }}>{filtered.length} transactions · ₱{totalRevenue.toLocaleString("en-IN")} revenue</p>
         </div>
         <button className="btn btn-primary" onClick={() => onNavigate("manual-sale")}>+ Manual Sale</button>
       </div>
@@ -51,10 +51,10 @@ export default function Sales({ onNavigate }: SalesProps) {
       {/* Summary cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
         {[
-          { label: "Total Sales", value: `₹${totalRevenue.toLocaleString("en-IN")}`, color: "#22C55E" },
+          { label: "Total Sales", value: `₱${totalRevenue.toLocaleString("en-IN")}`, color: "#22C55E" },
           { label: "Transactions", value: filtered.filter(s => s.status === "completed").length, color: "#3B82F6" },
           { label: "Refunds", value: filtered.filter(s => s.status === "refunded").length, color: "#EF4444" },
-          { label: "Avg. Order", value: `₹${Math.round(totalRevenue / Math.max(1, filtered.filter(s => s.status === "completed").length)).toLocaleString("en-IN")}`, color: "#F59E0B" },
+          { label: "Avg. Order", value: `₱${Math.round(totalRevenue / Math.max(1, filtered.filter(s => s.status === "completed").length)).toLocaleString("en-IN")}`, color: "#F59E0B" },
         ].map(({ label, value, color }) => (
           <div key={label} className="metric-card" style={{ padding: 16 }}>
             <p style={{ margin: 0, fontSize: 12, color: "var(--muted-foreground)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</p>
@@ -85,7 +85,7 @@ export default function Sales({ onNavigate }: SalesProps) {
                 <td style={{ fontSize: 13, color: "var(--muted-foreground)" }}>{s.date}</td>
                 <td style={{ fontSize: 13, fontWeight: 500 }}>{s.customer}</td>
                 <td style={{ fontSize: 13 }}>{s.items} items</td>
-                <td style={{ fontWeight: 700 }}>₹{s.total.toLocaleString("en-IN")}</td>
+                <td style={{ fontWeight: 700 }}>₱{s.total.toLocaleString("en-IN")}</td>
                 <td><span className={`badge ${s.payment === "cash" ? "badge-green" : s.payment === "qr" ? "badge-blue" : "badge-purple"}`}>{s.payment.toUpperCase()}</span></td>
                 <td><span className={`badge ${s.status === "completed" ? "badge-green" : "badge-red"}`}>{s.status}</span></td>
                 <td onClick={e => e.stopPropagation()}>
@@ -141,22 +141,22 @@ export default function Sales({ onNavigate }: SalesProps) {
                   <tr key={i}>
                     <td style={{ fontSize: 13 }}>Product {i + 1}</td>
                     <td style={{ fontSize: 13 }}>1</td>
-                    <td style={{ fontSize: 13 }}>₹{Math.round(selectedInvoice.total / selectedInvoice.items)}</td>
-                    <td style={{ fontSize: 13, fontWeight: 700 }}>₹{Math.round(selectedInvoice.total / selectedInvoice.items)}</td>
+                    <td style={{ fontSize: 13 }}>₱{Math.round(selectedInvoice.total / selectedInvoice.items)}</td>
+                    <td style={{ fontSize: 13, fontWeight: 700 }}>₱{Math.round(selectedInvoice.total / selectedInvoice.items)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
             <div style={{ padding: "12px 16px", background: "var(--muted)", borderRadius: 10, marginBottom: 20 }}>
-              {[["Subtotal", `₹${selectedInvoice.total - Math.round(selectedInvoice.total * 0.05)}`], ["GST (5%)", `₹${Math.round(selectedInvoice.total * 0.05)}`]].map(([k, v]) => (
+              {[["Subtotal", `₱${selectedInvoice.total - Math.round(selectedInvoice.total * 0.05)}`], ["GST (5%)", `₱${Math.round(selectedInvoice.total * 0.05)}`]].map(([k, v]) => (
                 <div key={k} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
                   <span style={{ color: "var(--muted-foreground)" }}>{k}</span><span>{v}</span>
                 </div>
               ))}
               <div style={{ height: 1, background: "var(--border)", margin: "8px 0" }} />
               <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800 }}>
-                <span>Total</span><span style={{ color: "var(--primary)", fontSize: 18 }}>₹{selectedInvoice.total.toLocaleString("en-IN")}</span>
+                <span>Total</span><span style={{ color: "var(--primary)", fontSize: 18 }}>₱{selectedInvoice.total.toLocaleString("en-IN")}</span>
               </div>
             </div>
 

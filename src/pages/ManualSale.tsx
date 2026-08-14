@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Plus, Trash2, ArrowLeft } from "lucide-react";
 
 interface ManualSaleProps { onNavigate: (p: string) => void; }
@@ -44,7 +44,7 @@ export default function ManualSale({ onNavigate }: ManualSaleProps) {
                 <div key={item.id} style={{ display: "grid", gridTemplateColumns: "1fr 80px 100px auto", gap: 10, alignItems: "center" }}>
                   <input className="input" placeholder="Item name" value={item.name} onChange={e => updateItem(item.id, "name", e.target.value)} />
                   <input className="input" type="number" placeholder="Qty" value={item.qty} onChange={e => updateItem(item.id, "qty", +e.target.value)} />
-                  <input className="input" type="number" placeholder="₹ Price" value={item.price} onChange={e => updateItem(item.id, "price", e.target.value)} />
+                  <input className="input" type="number" placeholder="₱ Price" value={item.price} onChange={e => updateItem(item.id, "price", e.target.value)} />
                   <button className="btn btn-ghost" style={{ padding: 8, color: "var(--danger)" }} onClick={() => removeItem(item.id)} disabled={items.length === 1}><Trash2 size={15} /></button>
                 </div>
               ))}
@@ -81,14 +81,14 @@ export default function ManualSale({ onNavigate }: ManualSaleProps) {
             {items.filter(i => i.name).map(i => (
               <div key={i.id} style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
                 <span style={{ color: "var(--muted-foreground)" }}>{i.name} × {i.qty}</span>
-                <span>₹{(i.qty * (+i.price || 0)).toLocaleString("en-IN")}</span>
+                <span>₱{(i.qty * (+i.price || 0)).toLocaleString("en-IN")}</span>
               </div>
             ))}
           </div>
           <div style={{ height: 1, background: "var(--border)", marginBottom: 12 }} />
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
             <span style={{ fontWeight: 800, fontSize: 16 }}>Total</span>
-            <span style={{ fontWeight: 800, fontSize: 22, color: "var(--primary)" }}>₹{total.toLocaleString("en-IN")}</span>
+            <span style={{ fontWeight: 800, fontSize: 22, color: "var(--primary)" }}>₱{total.toLocaleString("en-IN")}</span>
           </div>
           <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", padding: "12px" }} onClick={() => onNavigate("sales")}>
             Complete Sale

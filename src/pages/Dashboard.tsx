@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, ShoppingBag, Banknote, QrCode, Package, AlertTriangle, XCircle, Plus, ShoppingCart, Truck, DollarSign, ArrowRight } from "lucide-react";
+﻿import { TrendingUp, TrendingDown, ShoppingBag, Banknote, QrCode, Package, AlertTriangle, XCircle, Plus, ShoppingCart, Truck, DollarSign, ArrowRight } from "lucide-react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import { dailySalesData, monthlyRevenueData, paymentSplitData, topProducts, salesHistory } from "../data/mockData";
 
@@ -6,7 +6,7 @@ interface DashboardProps {
   onNavigate: (page: string) => void;
 }
 
-const fmt = (n: number) => "₹" + n.toLocaleString("en-IN");
+const fmt = (n: number) => "₱" + n.toLocaleString("en-IN");
 
 interface MetricCardProps {
   title: string;
@@ -48,7 +48,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
       <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10, padding: "10px 14px", boxShadow: "0 4px 16px rgba(0,0,0,0.1)", fontSize: 13 }}>
         <p style={{ margin: "0 0 6px", fontWeight: 700 }}>{label}</p>
         {payload.map((p: any, i: number) => (
-          <p key={i} style={{ margin: "2px 0", color: p.color }}>{p.name}: {p.name.includes("Revenue") || p.name.includes("Profit") || p.name.includes("Sales") ? "₹" : ""}{p.value.toLocaleString("en-IN")}</p>
+          <p key={i} style={{ margin: "2px 0", color: p.color }}>{p.name}: {p.name.includes("Revenue") || p.name.includes("Profit") || p.name.includes("Sales") ? "₱" : ""}{p.value.toLocaleString("en-IN")}</p>
         ))}
       </div>
     );
@@ -73,13 +73,13 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
 
       {/* Metric cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 16 }}>
-        <MetricCard title="Today's Sales" value="₹38,420" sub="vs ₹34,200 yesterday" trend={12.3} icon={<TrendingUp size={22} />} accent="#22C55E" />
+        <MetricCard title="Today's Sales" value="₱38,420" sub="vs ₱34,200 yesterday" trend={12.3} icon={<TrendingUp size={22} />} accent="#22C55E" />
         <MetricCard title="Today's Orders" value="178" sub="vs 162 yesterday" trend={9.9} icon={<ShoppingBag size={22} />} accent="#3B82F6" />
-        <MetricCard title="Cash Collection" value="₹17,289" sub="45% of total" icon={<Banknote size={22} />} accent="#F59E0B" />
-        <MetricCard title="QR / UPI" value="₹14,599" sub="38% of total" icon={<QrCode size={22} />} accent="#8B5CF6" />
-        <MetricCard title="Monthly Revenue" value="₹3,56,000" sub="Jan 2024" trend={7.4} icon={<TrendingUp size={22} />} accent="#22C55E" />
-        <MetricCard title="Profit" value="₹85,440" sub="24% margin" trend={4.1} icon={<DollarSign size={22} />} accent="#84CC16" />
-        <MetricCard title="Inventory Value" value="₹2,84,320" sub="1,247 SKUs active" icon={<Package size={22} />} accent="#06B6D4" />
+        <MetricCard title="Cash Collection" value="₱17,289" sub="45% of total" icon={<Banknote size={22} />} accent="#F59E0B" />
+        <MetricCard title="QR / UPI" value="₱14,599" sub="38% of total" icon={<QrCode size={22} />} accent="#8B5CF6" />
+        <MetricCard title="Monthly Revenue" value="₱3,56,000" sub="Jan 2024" trend={7.4} icon={<TrendingUp size={22} />} accent="#22C55E" />
+        <MetricCard title="Profit" value="₱85,440" sub="24% margin" trend={4.1} icon={<DollarSign size={22} />} accent="#84CC16" />
+        <MetricCard title="Inventory Value" value="₱2,84,320" sub="1,247 SKUs active" icon={<Package size={22} />} accent="#06B6D4" />
         <MetricCard title="Low Stock" value="5 items" sub="Need restock" icon={<AlertTriangle size={22} />} accent="#F59E0B" />
       </div>
 
@@ -103,7 +103,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="day" tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} tickFormatter={v => "₹" + (v / 1000) + "k"} />
+              <YAxis tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} tickFormatter={v => "₱" + (v / 1000) + "k"} />
               <Tooltip content={<CustomTooltip />} />
               <Area type="monotone" dataKey="sales" name="Sales" stroke="#22C55E" strokeWidth={2.5} fill="url(#salesGrad)" dot={{ fill: "#22C55E", r: 4 }} />
             </AreaChart>
@@ -153,7 +153,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             <BarChart data={monthlyRevenueData} barGap={4}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} tickFormatter={v => "₹" + (v / 1000) + "k"} />
+              <YAxis tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} tickFormatter={v => "₱" + (v / 1000) + "k"} />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="revenue" name="Revenue" fill="#22C55E" radius={[4, 4, 0, 0]} />
               <Bar dataKey="profit" name="Profit" fill="#84CC16" radius={[4, 4, 0, 0]} />

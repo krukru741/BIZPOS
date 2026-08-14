@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Search, Plus, Minus, Trash2, ShoppingCart, User, Tag, Receipt, QrCode, Banknote, CreditCard, CheckCircle, X, Pause } from "lucide-react";
 import { products, categories } from "../data/mockData";
 
@@ -90,7 +90,7 @@ export default function POS({ onNavigate }: POSProps) {
                   <p style={{ margin: "2px 0 0", fontSize: 11, color: "var(--muted-foreground)" }}>{p.brand}</p>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: 15, fontWeight: 800, color: "var(--primary)" }}>₹{p.sellingPrice}</span>
+                  <span style={{ fontSize: 15, fontWeight: 800, color: "var(--primary)" }}>₱{p.sellingPrice}</span>
                   {p.stock <= p.minStock && p.stock > 0 && <span className="badge badge-yellow" style={{ fontSize: 9, padding: "1px 5px" }}>Low</span>}
                   {p.stock === 0 && <span className="badge badge-red" style={{ fontSize: 9, padding: "1px 5px" }}>Out</span>}
                 </div>
@@ -134,14 +134,14 @@ export default function POS({ onNavigate }: POSProps) {
                 <span style={{ fontSize: 22, flexShrink: 0 }}>{item.image}</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ margin: 0, fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.name}</p>
-                  <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--muted-foreground)" }}>₹{item.price} × {item.qty}</p>
+                  <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--muted-foreground)" }}>₱{item.price} × {item.qty}</p>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                   <button onClick={() => updateQty(item.id, -1)} style={{ width: 24, height: 24, border: "1px solid var(--border)", borderRadius: 6, background: "var(--muted)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Minus size={12} /></button>
                   <span style={{ fontWeight: 700, fontSize: 14, minWidth: 20, textAlign: "center" }}>{item.qty}</span>
                   <button onClick={() => updateQty(item.id, 1)} style={{ width: 24, height: 24, border: "1px solid var(--primary)", borderRadius: 6, background: "rgba(34,197,94,0.1)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Plus size={12} color="var(--primary)" /></button>
                 </div>
-                <span style={{ fontWeight: 800, fontSize: 14, minWidth: 60, textAlign: "right" }}>₹{item.price * item.qty}</span>
+                <span style={{ fontWeight: 800, fontSize: 14, minWidth: 60, textAlign: "right" }}>₱{item.price * item.qty}</span>
               </div>
             ))
           )}
@@ -169,9 +169,9 @@ export default function POS({ onNavigate }: POSProps) {
           {/* Totals */}
           <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
             {[
-              ["Subtotal", `₹${subtotal.toLocaleString("en-IN")}`],
-              discount > 0 ? [`Discount (${discount}%)`, `-₹${discountAmt.toLocaleString("en-IN")}`] : null,
-              ["GST (5%)", `₹${tax.toLocaleString("en-IN")}`],
+              ["Subtotal", `₱${subtotal.toLocaleString("en-IN")}`],
+              discount > 0 ? [`Discount (${discount}%)`, `-₱${discountAmt.toLocaleString("en-IN")}`] : null,
+              ["GST (5%)", `₱${tax.toLocaleString("en-IN")}`],
             ].filter(Boolean).map(([k, v]) => (
               <div key={k as string} style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
                 <span style={{ color: "var(--muted-foreground)" }}>{k}</span>
@@ -181,7 +181,7 @@ export default function POS({ onNavigate }: POSProps) {
             <div style={{ height: 1, background: "var(--border)", margin: "4px 0" }} />
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span style={{ fontWeight: 800, fontSize: 16 }}>Total</span>
-              <span style={{ fontWeight: 800, fontSize: 20, color: "var(--primary)" }}>₹{total.toLocaleString("en-IN")}</span>
+              <span style={{ fontWeight: 800, fontSize: 20, color: "var(--primary)" }}>₱{total.toLocaleString("en-IN")}</span>
             </div>
           </div>
 
@@ -208,14 +208,14 @@ export default function POS({ onNavigate }: POSProps) {
             <div style={{ marginBottom: 12 }}>
               <input className="input" type="number" placeholder="Cash received" value={cashReceived} onChange={e => setCashReceived(e.target.value)} style={{ marginBottom: 6 }} />
               {cashReceived && +cashReceived >= total && (
-                <p style={{ margin: 0, fontSize: 13, color: "#22C55E", fontWeight: 700 }}>Change: ₹{change.toLocaleString("en-IN")}</p>
+                <p style={{ margin: 0, fontSize: 13, color: "#22C55E", fontWeight: 700 }}>Change: ₱{change.toLocaleString("en-IN")}</p>
               )}
             </div>
           )}
 
           {/* Actions */}
           <button className="btn btn-primary animate-pulse-green" style={{ width: "100%", justifyContent: "center", padding: "14px", fontSize: 16, fontWeight: 800, borderRadius: 12 }} onClick={completeSale} disabled={cart.length === 0}>
-            <CheckCircle size={18} /> Complete Sale — ₹{total.toLocaleString("en-IN")}
+            <CheckCircle size={18} /> Complete Sale — ₱{total.toLocaleString("en-IN")}
           </button>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 8 }}>
@@ -230,7 +230,7 @@ export default function POS({ onNavigate }: POSProps) {
         <div className="modal-overlay" onClick={() => setShowQR(false)}>
           <div className="modal" style={{ textAlign: "center", maxWidth: 380 }} onClick={e => e.stopPropagation()}>
             <h3 style={{ margin: "0 0 6px", fontSize: 20, fontWeight: 800 }}>Scan to Pay</h3>
-            <p style={{ margin: "0 0 20px", color: "var(--muted-foreground)" }}>Amount: <strong style={{ color: "var(--primary)", fontSize: 20 }}>₹{total.toLocaleString("en-IN")}</strong></p>
+            <p style={{ margin: "0 0 20px", color: "var(--muted-foreground)" }}>Amount: <strong style={{ color: "var(--primary)", fontSize: 20 }}>₱{total.toLocaleString("en-IN")}</strong></p>
 
             {/* QR code simulation */}
             <div style={{ width: 200, height: 200, margin: "0 auto 20px", background: "var(--foreground)", borderRadius: 16, display: "grid", gridTemplateColumns: "repeat(10,1fr)", gap: 1, padding: 12 }}>
@@ -260,7 +260,7 @@ export default function POS({ onNavigate }: POSProps) {
               <CheckCircle size={56} color="#22C55E" />
             </div>
             <h2 style={{ color: "#F8FAFC", fontSize: 28, fontWeight: 800, margin: 0 }}>Payment Successful!</h2>
-            <p style={{ color: "rgba(248,250,252,0.7)", margin: 0 }}>₹{total.toLocaleString("en-IN")} received · Invoice generated</p>
+            <p style={{ color: "rgba(248,250,252,0.7)", margin: 0 }}>₱{total.toLocaleString("en-IN")} received · Invoice generated</p>
           </div>
         </div>
       )}

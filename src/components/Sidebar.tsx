@@ -1,4 +1,4 @@
-import { LayoutDashboard, Package, ShoppingCart, BarChart3, Receipt, Users, Truck, DollarSign, Bell, Settings, ChevronLeft, ChevronRight, Leaf, PieChart, ClipboardList } from "lucide-react";
+﻿import { LayoutDashboard, Package, ShoppingCart, BarChart3, Receipt, Users, Truck, DollarSign, Bell, Settings, ChevronLeft, ChevronRight, Leaf, PieChart, ClipboardList } from "lucide-react";
 
 type Page = string;
 

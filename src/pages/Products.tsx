@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Plus, Search, Eye, Pencil, Trash2, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { products, categories } from "../data/mockData";
 
@@ -104,8 +104,8 @@ export default function Products({ onNavigate }: ProductsProps) {
                 <td style={{ fontFamily: "monospace", fontSize: 12, color: "var(--muted-foreground)" }}>{p.sku}</td>
                 <td><span className="badge badge-blue">{p.category}</span></td>
                 <td>
-                  <p style={{ margin: 0, fontWeight: 700, fontSize: 13 }}>₹{p.sellingPrice}</p>
-                  <p style={{ margin: 0, fontSize: 11, color: "var(--muted-foreground)" }}>Cost: ₹{p.buyingPrice}</p>
+                  <p style={{ margin: 0, fontWeight: 700, fontSize: 13 }}>₱{p.sellingPrice}</p>
+                  <p style={{ margin: 0, fontSize: 11, color: "var(--muted-foreground)" }}>Cost: ₱{p.buyingPrice}</p>
                 </td>
                 <td>
                   <p style={{ margin: 0, fontWeight: 600, fontSize: 13 }}>{p.stock} {p.unit}</p>

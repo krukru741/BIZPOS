@@ -1,4 +1,4 @@
-import { ArrowLeft, Pencil, Trash2, Package, TrendingUp, Barcode } from "lucide-react";
+﻿import { ArrowLeft, Pencil, Trash2, Package, TrendingUp, Barcode } from "lucide-react";
 import { products } from "../data/mockData";
 
 interface Props { onNavigate: (p: string) => void; }
@@ -32,7 +32,7 @@ export default function ProductDetail({ onNavigate }: Props) {
 
           <div className="card" style={{ padding: 20 }}>
             <h3 style={{ margin: "0 0 14px", fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--muted-foreground)" }}>Pricing</h3>
-            {[["Selling Price", `₹${p.sellingPrice}`], ["Buying Price", `₹${p.buyingPrice}`], ["GST", `${p.gst}%`], ["Margin", `${margin}%`]].map(([k, v]) => (
+            {[["Selling Price", `₱${p.sellingPrice}`], ["Buying Price", `₱${p.buyingPrice}`], ["GST", `${p.gst}%`], ["Margin", `${margin}%`]].map(([k, v]) => (
               <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid var(--border)", fontSize: 14 }}>
                 <span style={{ color: "var(--muted-foreground)" }}>{k}</span>
                 <span style={{ fontWeight: 700, color: k === "Margin" ? "var(--primary)" : "var(--foreground)" }}>{v}</span>
@@ -110,7 +110,7 @@ export default function ProductDetail({ onNavigate }: Props) {
                     <td style={{ fontFamily: "monospace", fontSize: 12, color: "var(--primary)", fontWeight: 600 }}>{row.inv}</td>
                     <td style={{ fontSize: 13 }}>{row.date}</td>
                     <td style={{ fontWeight: 600 }}>{row.qty}</td>
-                    <td style={{ fontWeight: 700, color: "var(--primary)" }}>₹{row.rev}</td>
+                    <td style={{ fontWeight: 700, color: "var(--primary)" }}>₱{row.rev}</td>
                   </tr>
                 ))}
               </tbody>
