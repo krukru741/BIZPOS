@@ -51,7 +51,7 @@ export default function Purchases() {
                 <td style={{ fontSize: 13, color: "var(--muted-foreground)" }}>{p.date}</td>
                 <td style={{ fontWeight: 500 }}>{p.supplier}</td>
                 <td>{p.items} items</td>
-                <td style={{ fontWeight: 700 }}>₱{p.total.toLocaleString("en-IN")}</td>
+                <td style={{ fontWeight: 700 }}>₱{p.total.toLocaleString("en-PH")}</td>
                 <td><span className={`badge ${p.status === "received" ? "badge-green" : "badge-yellow"}`}>{p.status}</span></td>
                 <td><button className="btn btn-ghost" style={{ padding: 6 }}><Eye size={15} /></button></td>
               </tr>

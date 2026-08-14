@@ -81,14 +81,14 @@ export default function ManualSale({ onNavigate }: ManualSaleProps) {
             {items.filter(i => i.name).map(i => (
               <div key={i.id} style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
                 <span style={{ color: "var(--muted-foreground)" }}>{i.name} × {i.qty}</span>
-                <span>₱{(i.qty * (+i.price || 0)).toLocaleString("en-IN")}</span>
+                <span>₱{(i.qty * (+i.price || 0)).toLocaleString("en-PH")}</span>
               </div>
             ))}
           </div>
           <div style={{ height: 1, background: "var(--border)", marginBottom: 12 }} />
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
             <span style={{ fontWeight: 800, fontSize: 16 }}>Total</span>
-            <span style={{ fontWeight: 800, fontSize: 22, color: "var(--primary)" }}>₱{total.toLocaleString("en-IN")}</span>
+            <span style={{ fontWeight: 800, fontSize: 22, color: "var(--primary)" }}>₱{total.toLocaleString("en-PH")}</span>
           </div>
           <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", padding: "12px" }} onClick={() => onNavigate("sales")}>
             Complete Sale

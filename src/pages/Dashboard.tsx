@@ -6,7 +6,7 @@ interface DashboardProps {
   onNavigate: (page: string) => void;
 }
 
-const fmt = (n: number) => "₱" + n.toLocaleString("en-IN");
+const fmt = (n: number) => "₱" + n.toLocaleString("en-PH");
 
 interface MetricCardProps {
   title: string;
@@ -48,7 +48,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
       <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 10, padding: "10px 14px", boxShadow: "0 4px 16px rgba(0,0,0,0.1)", fontSize: 13 }}>
         <p style={{ margin: "0 0 6px", fontWeight: 700 }}>{label}</p>
         {payload.map((p: any, i: number) => (
-          <p key={i} style={{ margin: "2px 0", color: p.color }}>{p.name}: {p.name.includes("Revenue") || p.name.includes("Profit") || p.name.includes("Sales") ? "₱" : ""}{p.value.toLocaleString("en-IN")}</p>
+          <p key={i} style={{ margin: "2px 0", color: p.color }}>{p.name}: {p.name.includes("Revenue") || p.name.includes("Profit") || p.name.includes("Sales") ? "₱" : ""}{p.value.toLocaleString("en-PH")}</p>
         ))}
       </div>
     );

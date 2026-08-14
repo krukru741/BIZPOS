@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Save, Upload, Sun, Moon } from "lucide-react";
 
 interface SettingsProps {
@@ -9,9 +9,9 @@ interface SettingsProps {
 export default function Settings({ darkMode, onToggleDark }: SettingsProps) {
   const [tab, setTab] = useState("store");
   const [store, setStore] = useState({
-    name: "FreshMart", tagline: "Fresh Everyday", phone: "+91 98765 43210",
-    email: "contact@freshmart.in", address: "123 MG Road, Bangalore - 560001",
-    gst: "27ABCDE1234F1Z5", currency: "INR",
+    name: "FreshMart", tagline: "Fresh Everyday", phone: "+63 917 123 4567",
+    email: "contact@freshmart.ph", address: "123 Rizal Avenue, Manila - 1000",
+    tin: "123-456-789-000", currency: "PHP",
   });
 
   const tabs = [
@@ -63,7 +63,7 @@ export default function Settings({ darkMode, onToggleDark }: SettingsProps) {
                   { label: "Tagline", key: "tagline" as const },
                   { label: "Phone", key: "phone" as const },
                   { label: "Email", key: "email" as const },
-                  { label: "GST Number", key: "gst" as const },
+                  { label: "TIN", key: "tin" as const },
                   { label: "Currency", key: "currency" as const },
                 ].map(({ label, key }) => (
                   <div key={key}>
@@ -107,8 +107,8 @@ export default function Settings({ darkMode, onToggleDark }: SettingsProps) {
                 {/* Receipt preview */}
                 <div style={{ background: "#fff", border: "1px solid var(--border)", borderRadius: 12, padding: 20, fontFamily: "monospace", fontSize: 12, color: "#111", maxHeight: 400, overflow: "hidden" }}>
                   <p style={{ textAlign: "center", fontWeight: 700, fontSize: 14, margin: "0 0 4px" }}>FRESHMART</p>
-                  <p style={{ textAlign: "center", color: "#555", margin: "0 0 2px" }}>123 MG Road, Bangalore</p>
-                  <p style={{ textAlign: "center", color: "#555", margin: "0 0 12px" }}>GST: 27ABCDE1234F1Z5</p>
+                  <p style={{ textAlign: "center", color: "#555", margin: "0 0 2px" }}>123 Rizal Avenue, Manila</p>
+                  <p style={{ textAlign: "center", color: "#555", margin: "0 0 12px" }}>TIN: 123-456-789-000</p>
                   <p style={{ borderTop: "1px dashed #ccc", margin: "0 0 8px", paddingTop: 8 }}>INV-2024-0842</p>
                   <p style={{ margin: "0 0 8px" }}>Date: 15/01/2024 14:32</p>
                   <div style={{ borderTop: "1px dashed #ccc", paddingTop: 8, marginBottom: 8 }}>
@@ -130,16 +130,16 @@ export default function Settings({ darkMode, onToggleDark }: SettingsProps) {
               <h3 style={{ margin: "0 0 20px", fontWeight: 700 }}>Tax Settings</h3>
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "var(--muted)", borderRadius: 10 }}>
-                  <div><p style={{ margin: 0, fontWeight: 600 }}>GST Enabled</p><p style={{ margin: 0, fontSize: 12, color: "var(--muted-foreground)" }}>Apply GST to all applicable products</p></div>
+                  <div><p style={{ margin: 0, fontWeight: 600 }}>VAT Enabled</p><p style={{ margin: 0, fontSize: 12, color: "var(--muted-foreground)" }}>Apply VAT to all applicable products</p></div>
                   <input type="checkbox" defaultChecked style={{ width: 20, height: 20, accentColor: "var(--primary)" }} />
                 </div>
-                <div><label className="form-label">GSTIN</label><input className="input" defaultValue="27ABCDE1234F1Z5" /></div>
-                <div><label className="form-label">Default Tax Rate (%)</label><input className="input" type="number" defaultValue="5" /></div>
-                <h4 style={{ margin: "8px 0 4px" }}>Tax Slabs</h4>
-                {[0, 5, 12, 18, 28].map(rate => (
-                  <div key={rate} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", border: "1px solid var(--border)", borderRadius: 8 }}>
-                    <span style={{ fontWeight: 600 }}>{rate}% GST</span>
-                    <input type="checkbox" defaultChecked={rate > 0} style={{ width: 18, height: 18, accentColor: "var(--primary)" }} />
+                <div><label className="form-label">TIN</label><input className="input" defaultValue="123-456-789-000" /></div>
+                <div><label className="form-label">VAT Rate (%)</label><input className="input" type="number" defaultValue="12" /></div>
+                <h4 style={{ margin: "8px 0 4px" }}>VAT Applicability</h4>
+                {[{ label: "VAT-registered (12%)", def: true }, { label: "VAT-exempt (0%)", def: false }, { label: "Zero-rated (0%)", def: false }].map(({ label, def }) => (
+                  <div key={label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", border: "1px solid var(--border)", borderRadius: 8 }}>
+                    <span style={{ fontWeight: 600 }}>{label}</span>
+                    <input type="checkbox" defaultChecked={def} style={{ width: 18, height: 18, accentColor: "var(--primary)" }} />
                   </div>
                 ))}
               </div>

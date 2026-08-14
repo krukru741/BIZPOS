@@ -30,7 +30,7 @@ export default function Inventory({ onNavigate }: InventoryProps) {
       {/* Stats */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
         {[
-          { label: "Inventory Value", value: `₱${totalValue.toLocaleString("en-IN")}`, sub: "at buying price", color: "#22C55E", icon: <Package size={20} /> },
+          { label: "Inventory Value", value: `₱${totalValue.toLocaleString("en-PH")}`, sub: "at buying price", color: "#22C55E", icon: <Package size={20} /> },
           { label: "In Stock", value: inStock, sub: "products", color: "#3B82F6", icon: <TrendingUp size={20} /> },
           { label: "Low Stock", value: lowStock, sub: "need reorder", color: "#F59E0B", icon: <AlertTriangle size={20} /> },
           { label: "Out of Stock", value: outOfStock, sub: "urgent", color: "#EF4444", icon: <XCircle size={20} /> },
@@ -94,7 +94,7 @@ export default function Inventory({ onNavigate }: InventoryProps) {
                   </div>
                 </td>
                 <td style={{ fontSize: 13 }}>{p.minStock} {p.unit}</td>
-                <td style={{ fontWeight: 700, fontSize: 13 }}>₱{(p.stock * p.buyingPrice).toLocaleString("en-IN")}</td>
+                <td style={{ fontWeight: 700, fontSize: 13 }}>₱{(p.stock * p.buyingPrice).toLocaleString("en-PH")}</td>
                 <td>
                   {p.stock === 0 ? <span className="badge badge-red">Out of Stock</span> :
                    p.stock <= p.minStock ? <span className="badge badge-yellow">Low Stock</span> :
